@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icon/last.png</file>
+        <file>icon/loop.png</file>
+        <file>icon/next.png</file>
+        <file>icon/pause.png</file>
+        <file>icon/play.png</file>
+        <file>icon/random.png</file>
+        <file>icon/single.png</file>
+        <file>icon/volume.png</file>
+        <file>icon/cover.png</file>
+        <file>icon/icon.png</file>
+        <file>icon/dislove.png</file>
+        <file>icon/love.png</file>
+        <file>icon/collect.png</file>
+        <file>icon/homeNormal.png</file>
+        <file>icon/homeSelect.png</file>
+    </qresource>
+</RCC>
