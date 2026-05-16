@@ -18,7 +18,7 @@ public:
 
 
     void loadPlayList();
-    void generateJson();
+    void generateData();
     QJsonObject parseMusic(const QString &filePath);
 
 

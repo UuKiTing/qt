@@ -35,8 +35,8 @@ public:
     {
         if (UISideBar->objectName().isEmpty())
             UISideBar->setObjectName("UISideBar");
-        UISideBar->resize(77, 463);
-        UISideBar->setStyleSheet(QString::fromUtf8("background-color: white;"));
+        UISideBar->resize(73, 465);
+        UISideBar->setStyleSheet(QString::fromUtf8(""));
         verticalLayout_2 = new QVBoxLayout(UISideBar);
         verticalLayout_2->setSpacing(0);
         verticalLayout_2->setObjectName("verticalLayout_2");
@@ -44,7 +44,7 @@ public:
         widget = new QWidget(UISideBar);
         widget->setObjectName("widget");
         widget->setStyleSheet(QString::fromUtf8("QToolButton {\n"
-"    background-color: #EFEFEF;\n"
+"	background-color: #E9E9E9;\n"
 "    border-radius: 10px;\n"
 "	padding: 5px;\n"
 "	min-height: 45px;\n"
@@ -53,14 +53,15 @@ public:
 "	max-width: 45px;\n"
 "}\n"
 "QToolButton:checked {\n"
-"    background-color: #DEDEDE;\n"
+"    background-color: #D8D8D8;\n"
 "}\n"
 "\n"
 "QToolButton:pressed {\n"
 "	padding: 5px;\n"
 "}\n"
 "\n"
-"background-color: #F6F6F6;"));
+"background-color: #F3F3F3;\n"
+""));
         verticalLayout = new QVBoxLayout(widget);
         verticalLayout->setSpacing(10);
         verticalLayout->setObjectName("verticalLayout");

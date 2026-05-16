@@ -33,39 +33,31 @@ void UIMain::initVolumeMenu()
     m_volumeSlider->setRange(0, 100);
 
     m_volumeMenu->setStyleSheet(R"(
-    QMenu {
-        background: transparent;
-        border: none;
-    }
-    QMenu::icon {
-        width: 0px;
-        margin: 0px;
-    }
+
+QSlider {
+    background-color: transparent;
+}
+
+QSlider::groove:vertical {
+    background: #E3F2FD;
+    width: 4px;
+}
+
+QSlider::add-page:vertical {
+    background: #64B5F6;
+    width: 4px;
+}
+
+QSlider::handle:vertical {
+    background: #FFFFFF;
+    height: 10px;
+    width: 10px;
+    border-radius: 5px;
+    margin: 0 -6px;
+    border: 1px solid #64B5F6;
+}
 )");
 
-//     m_volumeSlider->setStyleSheet(R"(
-//     QSlider::groove:vertical {
-//         background: #f0f0f0;
-//         height: 6px;
-//         border-radius: 3px;
-//     }
-//     QSlider::sub-page:vertical {
-//         background: #4a90d9;
-//         border-radius: 3px;
-//     }
-//     QSlider::handle:vertical {
-//         background: #ffffff;
-//         border: 2px solid #4a90d9;
-//         width: 14px;
-//         height: 14px;
-//         margin: -5px 0;
-//         border-radius: 7px;
-//     }
-//     QSlider::handle:vertical:hover {
-//         background: #4a90d9;
-//         border-color: #ffffff;
-//     }
-// )");
 
     QWidgetAction *action = new QWidgetAction(m_volumeMenu);
     action->setDefaultWidget(m_volumeSlider);

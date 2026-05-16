@@ -1,5 +1,6 @@
 #include "musicplayer.h"
 #include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QSettings>
 #include <QTimer>
 
@@ -21,6 +22,7 @@ MusicPlayer::MusicPlayer(QWidget *parent)
     pageConnect();
 
     loadSettings();
+
 }
 
 void MusicPlayer::initUI()
@@ -29,12 +31,19 @@ void MusicPlayer::initUI()
 
     m_uiMain = new UIMain(this);
     m_uiSideBar = new UISideBar(this);
+    m_uiSearch = new UISearch(this);
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
+    QHBoxLayout *HBox = new QHBoxLayout(this);
+    HBox->setContentsMargins(0, 0, 0, 0);
+    HBox->addWidget(m_uiSideBar);
 
-    layout->addWidget(m_uiSideBar);
-    layout->addWidget(m_uiMain);
+    QVBoxLayout *VBox = new QVBoxLayout;
+    VBox->setContentsMargins(0, 0, 0, 0);
+    VBox->setSpacing(0);
+    VBox->addWidget(m_uiSearch);
+    VBox->addWidget(m_uiMain);
+
+    HBox->addLayout(VBox);
 }
 
 void MusicPlayer::playConnect()
@@ -85,12 +94,9 @@ void MusicPlayer::playConnect()
     connect(m_listManager, &PlayListManager::modeChanged, m_uiMain, &UIMain::onModeChanged);
 
 
-    // connect(m_uiMain, &UIMain::collected, [this](){
-    //     int row = m_listManager->currentRow();
-    //     if(row < 0) return;
-    //     QModelIndex index = m_listManager->item(row)->index();
-    //     m_listManager->setCollectData(index, true);
-    // });
+    connect(m_uiMain, &UIMain::collected, [this](){
+
+    });
 }
 
 void MusicPlayer::progressSliderConnect()
@@ -150,6 +156,7 @@ void MusicPlayer::loadSettings()
     if(item == nullptr){
         return;
     }
+
     QModelIndex index = item->index();
     m_uiMain->setCurrentIndex(index);
     m_uiMain->onlistViewDbClicked(index, false);

@@ -12,6 +12,13 @@ DbManager::DbManager(QObject *parent)
     }
 }
 
+
+DbManager &DbManager::getInstance()
+{
+    static DbManager db;
+    return db;
+}
+
 QList<SongInfo> DbManager::loadSongs()
 {
     QSqlQuery query;
@@ -32,3 +39,24 @@ QList<SongInfo> DbManager::loadSongs()
 
     return list;
 }
+
+void DbManager::appendData(const SongInfo &info)
+{
+    QSqlQuery query;
+    query.prepare("insert into songs values(:id, :title, :artist, :duration, :filePath, :cover)");
+    query.bindValue(":id", info.id);
+    query.bindValue(":title", info.title);
+    query.bindValue(":artist", info.artist);
+    query.bindValue(":duration", info.duration);
+    query.bindValue(":filePath", info.filePath);
+    query.bindValue(":cover", info.cover);
+    query.exec();
+}
+
+DbManager::~DbManager()
+{
+    QString connectName = m_db.connectionName();
+    m_db.close();
+    QSqlDatabase::removeDatabase(connectName);
+}
+

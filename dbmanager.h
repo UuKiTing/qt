@@ -12,14 +12,23 @@ class DbManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit DbManager(QObject *parent = nullptr);
+
+
+    static DbManager& getInstance();
 
     QList<SongInfo> loadSongs();
+
+    void appendData(const SongInfo &info);
+
 
 signals:
 
 private:
     QSqlDatabase m_db;
+
+    explicit DbManager(QObject *parent = nullptr);
+    ~DbManager();
+
 };
 
 #endif // DBMANAGER_H

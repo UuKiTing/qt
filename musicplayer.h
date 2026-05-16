@@ -5,7 +5,7 @@
 #include "playlistmanager.h"
 #include "uimain.h"
 #include "uisidebar.h"
-
+#include "uisearch.h"
 #include <QWidget>
 
 class MusicPlayer : public QWidget
@@ -37,6 +37,8 @@ private:
     PlayListManager *m_listManager;
     UIMain *m_uiMain;
     UISideBar *m_uiSideBar;
+    UISearch *m_uiSearch;
+
 
     bool m_isDragging = false;// 标志位：是否关闭播放器进度和进度条滑块的同步
 };

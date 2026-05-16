@@ -12,67 +12,98 @@ PlayListManager::PlayListManager(QObject *parent)
     : QObject{parent}
 {
     m_model = new QStandardItemModel(this);
-    // m_dbManager = new DbManager(this);
 
-    // generateJson();
+    // generateData();
     loadPlayList();
 }
 
 
 void PlayListManager::loadPlayList()
 {
-    QFile file("playlist.json");
-    if(!file.open(QIODevice::ReadOnly)){
-        qWarning() << "[PlayListManager]:" << file.errorString();
-        return;
-    }
-    const QJsonArray arr = QJsonDocument::fromJson(file.readAll()).array();
-    for(const QJsonValue &val : arr){
-        QJsonObject obj = val.toObject();
+    for(SongInfo &info : DbManager::getInstance().loadSongs()){
         QStandardItem *item = new QStandardItem;
 
-        item->setData(obj["title"].toString(), Role::Title);
-        item->setData(obj["artist"].toString(), Role::Artist);
-        item->setData(obj["duration"].toInt(), Role::Duration);
-        item->setData(obj["filePath"].toString(), Role::FilePath);
-        item->setData(obj["cover"].toString(), Role::Cover);
-        item->setData(durationString(obj["duration"].toInt()), Role::DurationString);
+        item->setData(info.title, Role::Title);
+        item->setData(info.artist, Role::Artist);
+        item->setData(info.duration, Role::Duration);
+        item->setData(QDir::currentPath() + info.filePath, Role::FilePath);
+        item->setData(QDir::currentPath() + info.cover, Role::Cover);
+        item->setData(durationString(info.duration), Role::DurationString);
         item->setData(false, Role::IsPlaying);
         item->setData(false, Role::IsFavorite);
 
         m_model->appendRow(item);
     }
+
+    // QFile file("playlist.json");
+    // if(!file.open(QIODevice::ReadOnly)){
+    //     qWarning() << "[PlayListManager]:" << file.errorString();
+    //     return;
+    // }
+    // const QJsonArray arr = QJsonDocument::fromJson(file.readAll()).array();
+    // for(const QJsonValue &val : arr){
+    //     QJsonObject obj = val.toObject();
+    //     QStandardItem *item = new QStandardItem;
+
+    //     item->setData(obj["title"].toString(), Role::Title);
+    //     item->setData(obj["artist"].toString(), Role::Artist);
+    //     item->setData(obj["duration"].toInt(), Role::Duration);
+    //     item->setData(obj["filePath"].toString(), Role::FilePath);
+    //     item->setData(obj["cover"].toString(), Role::Cover);
+    //     item->setData(durationString(obj["duration"].toInt()), Role::DurationString);
+    //     item->setData(false, Role::IsPlaying);
+    //     item->setData(false, Role::IsFavorite);
+
+    //     m_model->appendRow(item);
+    // }
 }
 
 
-void PlayListManager::generateJson()
+void PlayListManager::generateData()
 {
-    QJsonArray playlist;
-
     int id = 1;
     QDir dir(QDir::currentPath() + "/songs");
 
     for(const QFileInfo &info : dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot)){
         QJsonObject obj = parseMusic(info.filePath());
 
-        QJsonObject song;
-        song["id"] = id++;
-        song["title"] = obj["title"].toString();
-        song["artist"] = obj["artist"].toString();
-        song["duration"] = obj["duration"].toInt();
-        song["filePath"] = info.filePath();
-        song["cover"] = QDir::currentPath() + "/songImage/" + info.baseName() + ".jpg";
+        SongInfo song;
+        song.id = id++;
+        song.title = obj["title"].toString();
+        song.artist = obj["artist"].toString();
+        song.duration = obj["duration"].toInt();
+        song.filePath = "/songs/" + info.fileName();
+        song.cover = "/songImage/" + info.baseName() + ".jpg";
 
-        playlist.append(song);
+        DbManager::getInstance().appendData(song);
     }
 
-    QFile jsonFile("playlist.json");
-    if(!jsonFile.open(QIODevice::WriteOnly)){
-        qWarning() << "[PlayListManager]:" << jsonFile.errorString();
-        return;
-    }
-    jsonFile.write(QJsonDocument(playlist).toJson());
-    jsonFile.close();
+    // QJsonArray playlist;
+
+    // int id = 1;
+    // QDir dir(QDir::currentPath() + "/songs");
+
+    // for(const QFileInfo &info : dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot)){
+    //     QJsonObject obj = parseMusic(info.filePath());
+
+    //     QJsonObject song;
+    //     song["id"] = id++;
+    //     song["title"] = obj["title"].toString();
+    //     song["artist"] = obj["artist"].toString();
+    //     song["duration"] = obj["duration"].toInt();
+    //     song["filePath"] = info.filePath();
+    //     song["cover"] = QDir::currentPath() + "/songImage/" + info.baseName() + ".jpg";
+
+    //     playlist.append(song);
+    // }
+
+    // QFile jsonFile("playlist.json");
+    // if(!jsonFile.open(QIODevice::WriteOnly)){
+    //     qWarning() << "[PlayListManager]:" << jsonFile.errorString();
+    //     return;
+    // }
+    // jsonFile.write(QJsonDocument(playlist).toJson());
+    // jsonFile.close();
 }
 
 QJsonObject PlayListManager::parseMusic(const QString &filePath)

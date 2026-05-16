@@ -34,6 +34,8 @@ public:
     QVBoxLayout *verticalLayout_4;
     QListView *listView;
     QWidget *page_2;
+    QVBoxLayout *verticalLayout_5;
+    QListView *collectListView;
     QFrame *frame;
     QHBoxLayout *horizontalLayout_3;
     QLabel *coverLabel;
@@ -66,21 +68,25 @@ public:
     {
         if (UIMain->objectName().isEmpty())
             UIMain->setObjectName("UIMain");
-        UIMain->resize(1220, 800);
+        UIMain->resize(1000, 600);
         QSizePolicy sizePolicy(QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(UIMain->sizePolicy().hasHeightForWidth());
         UIMain->setSizePolicy(sizePolicy);
-        UIMain->setMinimumSize(QSize(1220, 800));
+        UIMain->setMinimumSize(QSize(1000, 600));
         UIMain->setBaseSize(QSize(0, 0));
         UIMain->setStyleSheet(QString::fromUtf8(""));
         verticalLayout_2 = new QVBoxLayout(UIMain);
-        verticalLayout_2->setSpacing(5);
+        verticalLayout_2->setSpacing(10);
         verticalLayout_2->setObjectName("verticalLayout_2");
-        verticalLayout_2->setContentsMargins(3, 3, 3, 3);
+        verticalLayout_2->setContentsMargins(0, 0, 0, 0);
         stackedWidget = new QStackedWidget(UIMain);
         stackedWidget->setObjectName("stackedWidget");
+        stackedWidget->setStyleSheet(QString::fromUtf8("border-radius: 10px;\n"
+"\n"
+"\n"
+""));
         page = new QWidget();
         page->setObjectName("page");
         verticalLayout_4 = new QVBoxLayout(page);
@@ -95,7 +101,7 @@ public:
         sizePolicy1.setHeightForWidth(listView->sizePolicy().hasHeightForWidth());
         listView->setSizePolicy(sizePolicy1);
         listView->setStyleSheet(QString::fromUtf8("    QListView {\n"
-"        background: #ffffff;\n"
+"		background-color: white;\n"
 "        border: none;\n"
 "        outline: none;\n"
 "    }\n"
@@ -114,6 +120,15 @@ public:
         stackedWidget->addWidget(page);
         page_2 = new QWidget();
         page_2->setObjectName("page_2");
+        verticalLayout_5 = new QVBoxLayout(page_2);
+        verticalLayout_5->setSpacing(0);
+        verticalLayout_5->setObjectName("verticalLayout_5");
+        verticalLayout_5->setContentsMargins(0, 0, 0, 0);
+        collectListView = new QListView(page_2);
+        collectListView->setObjectName("collectListView");
+
+        verticalLayout_5->addWidget(collectListView);
+
         stackedWidget->addWidget(page_2);
 
         verticalLayout_2->addWidget(stackedWidget);
@@ -126,9 +141,8 @@ public:
         sizePolicy2.setHeightForWidth(frame->sizePolicy().hasHeightForWidth());
         frame->setSizePolicy(sizePolicy2);
         frame->setStyleSheet(QString::fromUtf8("QFrame#frame {\n"
-"	background: #ffffff;\n"
+"	background: white;\n"
 "	border-radius: 10px;\n"
-"	border: 2px solid lightblue;\n"
 "}"));
         frame->setFrameShape(QFrame::Shape::StyledPanel);
         frame->setFrameShadow(QFrame::Shadow::Raised);
@@ -139,8 +153,8 @@ public:
         coverLabel->setObjectName("coverLabel");
         sizePolicy1.setHeightForWidth(coverLabel->sizePolicy().hasHeightForWidth());
         coverLabel->setSizePolicy(sizePolicy1);
-        coverLabel->setMinimumSize(QSize(65, 65));
-        coverLabel->setMaximumSize(QSize(65, 65));
+        coverLabel->setMinimumSize(QSize(60, 60));
+        coverLabel->setMaximumSize(QSize(60, 60));
         coverLabel->setCursor(QCursor(Qt::CursorShape::ArrowCursor));
         coverLabel->setStyleSheet(QString::fromUtf8(""));
         coverLabel->setPixmap(QPixmap(QString::fromUtf8(":/icon/cover.png")));

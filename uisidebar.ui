@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>77</width>
-    <height>463</height>
+    <width>73</width>
+    <height>465</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: white;</string>
+   <string notr="true"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="spacing">
@@ -36,7 +36,7 @@
     <widget class="QWidget" name="widget" native="true">
      <property name="styleSheet">
       <string notr="true">QToolButton {
-    background-color: #EFEFEF;
+	background-color: #E9E9E9;
     border-radius: 10px;
 	padding: 5px;
 	min-height: 45px;
@@ -45,14 +45,15 @@
 	max-width: 45px;
 }
 QToolButton:checked {
-    background-color: #DEDEDE;
+    background-color: #D8D8D8;
 }
 
 QToolButton:pressed {
 	padding: 5px;
 }
 
-background-color: #F6F6F6;</string>
+background-color: #F3F3F3;
+</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <property name="spacing">

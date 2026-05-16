@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1220</width>
-    <height>800</height>
+    <width>1000</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>1220</width>
-    <height>800</height>
+    <width>1000</width>
+    <height>600</height>
    </size>
   </property>
   <property name="baseSize">
@@ -36,22 +36,28 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="spacing">
-    <number>5</number>
+    <number>10</number>
    </property>
    <property name="leftMargin">
-    <number>3</number>
+    <number>0</number>
    </property>
    <property name="topMargin">
-    <number>3</number>
+    <number>0</number>
    </property>
    <property name="rightMargin">
-    <number>3</number>
+    <number>0</number>
    </property>
    <property name="bottomMargin">
-    <number>3</number>
+    <number>0</number>
    </property>
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
+     <property name="styleSheet">
+      <string notr="true">border-radius: 10px;
+
+
+</string>
+     </property>
      <property name="currentIndex">
       <number>0</number>
      </property>
@@ -82,7 +88,7 @@
          </property>
          <property name="styleSheet">
           <string notr="true">    QListView {
-        background: #ffffff;
+		background-color: white;
         border: none;
         outline: none;
     }
@@ -102,7 +108,28 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="page_2"/>
+     <widget class="QWidget" name="page_2">
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QListView" name="collectListView"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
@@ -115,9 +142,8 @@
      </property>
      <property name="styleSheet">
       <string notr="true">QFrame#frame {
-	background: #ffffff;
+	background: white;
 	border-radius: 10px;
-	border: 2px solid lightblue;
 }</string>
      </property>
      <property name="frameShape">
@@ -149,14 +175,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>65</width>
-          <height>65</height>
+          <width>60</width>
+          <height>60</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>65</width>
-          <height>65</height>
+          <width>60</width>
+          <height>60</height>
          </size>
         </property>
         <property name="cursor">

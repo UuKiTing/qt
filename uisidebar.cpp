@@ -31,11 +31,23 @@ void UISideBar::init()
 void UISideBar::connectSignals()
 {
     connect(ui->homeBtn, &QToolButton::toggled, [this](bool checked){
-        if(checked) emit pageChanged(0);
+        if(checked) {
+            emit pageChanged(0);
+            ui->homeBtn->setIcon(QIcon(":/icon/homeSelect.png"));
+        }
+        else{
+            ui->homeBtn->setIcon(QIcon(":/icon/homeNormal.png"));
+        }
     });
 
     connect(ui->collectBtn, &QToolButton::toggled, [this](bool checked){
-        if(checked) emit pageChanged(1);
+        if(checked) {
+            emit pageChanged(1);
+            ui->collectBtn->setIcon(QIcon(":/icon/collect.png"));
+        }
+        else{
+            ui->collectBtn->setIcon(QIcon(":/icon/dislove.png"));
+        }
     });
 }
 
