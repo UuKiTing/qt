@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QPixmap>
+#include <QModelIndex>
 
 
 struct SongInfo{
@@ -12,17 +13,20 @@ struct SongInfo{
     int duration = 0; // 时长/秒
     QString filePath; // 文件路径
     QString cover; // 封面路径
+    bool isFavo; // 是否收藏
 };
 
 enum Role{
-    Title = Qt::UserRole,
+    Id = Qt::UserRole + 1,
+    Title,
     Artist,
     Duration,
     FilePath,
     Cover,
     DurationString,
     IsPlaying,
-    IsFavorite
+    IsFavorite,
+    Invalid
 };
 
 enum PlayMode{
@@ -36,6 +40,8 @@ enum PlayMode{
 QString durationString(int duration); // 返回 "03:24" 格式
 
 QPixmap roundPixmap(const QPixmap &source, const QSize &size, int radius);
+
+SongInfo& toSongInfo(const QModelIndex &index);
 
 
 #endif // GLOBAL_H

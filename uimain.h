@@ -23,10 +23,13 @@ public:
 
 
     void initVolumeMenu();
+    void connectSingal();
     void setPlayStyle(const QModelIndex &index);
     void switchStackedWidget(int pageIndex);
+    void collectStatusToggle(bool checked);
+    void collectIconToggle(bool isFavo);
 
-    void setModel(QStandardItemModel *model);
+    void setModel(QAbstractItemView *view, QStandardItemModel *model);
     void setPlayBtnIcon(QMediaPlayer::PlaybackState state);
     void setCurDuration(qint64 position);
     void setProgressSliderRange(qint64 duration);
@@ -38,6 +41,7 @@ public:
     void setCurrentIndex(const QModelIndex &index);
 
     QListView* listView();
+    QListView* collectListView();
     QSlider* progressSlider();
     QSlider* volumeSlider();
     int progressValue();
@@ -49,8 +53,8 @@ signals:
     void skipRequested(bool isNext);
     void modeChangeRequested();
     void programClosed();
-    void collected();
-    void notCollected();
+    void collected(const QModelIndex &index = QModelIndex());
+    void notCollected(const QModelIndex &index = QModelIndex());
 
 public slots:
     void onModeChanged(PlayMode mode);

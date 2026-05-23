@@ -14,5 +14,6 @@ int main(int argc, char *argv[])
 
     MusicPlayer player;
     player.show();
+
     return a.exec();
 }

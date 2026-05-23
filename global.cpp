@@ -36,3 +36,18 @@ QPixmap roundPixmap(const QPixmap &source, const QSize &size, int radius)
 
     return result;
 }
+
+SongInfo& toSongInfo(const QModelIndex &index)
+{
+    SongInfo info;
+
+    info.id = index.data(Role::Id).toInt();
+    info.title = index.data(Role::Title).toString();
+    info.artist = index.data(Role::Artist).toString();
+    info.duration = index.data(Role::Duration).toInt();
+    info.filePath = index.data(Role::FilePath).toString();
+    info.cover = index.data(Role::Cover).toString();
+    info.isFavo = index.data(Role::IsFavorite).toBool();
+
+    return info;
+}

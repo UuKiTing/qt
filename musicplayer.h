@@ -20,6 +20,10 @@ public:
     void progressSliderConnect();
     void volumeSliderConnect();
     void pageConnect();
+    void collectConnect();
+
+    void collectSong(bool isCollect, const QModelIndex &index = QModelIndex());
+
 
     void saveSettings(); // 保存
     void loadSettings(); // 加载

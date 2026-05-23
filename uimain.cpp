@@ -15,8 +15,10 @@ UIMain::UIMain(QWidget *parent)
     // 设置委托
     m_delegate = new StyleItemDelegate(this);
     ui->listView->setItemDelegate(m_delegate);
+    ui->collectListView->setItemDelegate(m_delegate);
 
     initVolumeMenu();
+    connectSingal();
 }
 
 
@@ -49,9 +51,9 @@ QSlider::add-page:vertical {
 }
 
 QSlider::handle:vertical {
-    background: #FFFFFF;
+    background: #FFFFFF;q
     height: 10px;
-    width: 10px;
+    width: 15px;
     border-radius: 5px;
     margin: 0 -6px;
     border: 1px solid #64B5F6;
@@ -65,12 +67,26 @@ QSlider::handle:vertical {
     m_volumeMenu->addAction(action);
 }
 
+void UIMain::connectSingal()
+{
+    connect(m_delegate, &StyleItemDelegate::collected, this, &UIMain::collected);
+    connect(m_delegate, &StyleItemDelegate::notCollected, this, &UIMain::notCollected);
+}
+
 void UIMain::setPlayStyle(const QModelIndex &index)
 {
     this->setTotalDuration(durationString(index.data(Role::Duration).toInt()));
     this->setCoverPixmap(index.data(Role::Cover).toString());
     this->setTitleAndArtist(index.data(Role::Title).toString(),
                             index.data(Role::Artist).toString());
+    if(index.data(Role::IsFavorite).toBool()){
+        ui->loveBtn->setIcon(QIcon(":/icon/love.png"));
+        ui->loveBtn->setChecked(true);
+    }
+    else{
+        ui->loveBtn->setIcon(QIcon(":/icon/dislove.png"));
+        ui->loveBtn->setChecked(false);
+    }
 }
 
 void UIMain::switchStackedWidget(int pageIndex)
@@ -78,9 +94,27 @@ void UIMain::switchStackedWidget(int pageIndex)
     ui->stackedWidget->setCurrentIndex(pageIndex);
 }
 
-void UIMain::setModel(QStandardItemModel *model)
+void UIMain::collectStatusToggle(bool checked)
 {
-    ui->listView->setModel(model);
+    collectIconToggle(checked);
+    if(checked) emit collected();
+    else emit notCollected();
+}
+
+void UIMain::collectIconToggle(bool isFavo)
+{
+    if(isFavo){
+        ui->loveBtn->setIcon(QIcon(":/icon/love.png"));
+
+    }
+    else {
+        ui->loveBtn->setIcon(QIcon(":/icon/dislove.png"));
+    }
+}
+
+void UIMain::setModel(QAbstractItemView *view, QStandardItemModel *model)
+{
+    view->setModel(model);
 }
 
 void UIMain::setPlayBtnIcon(QMediaPlayer::PlaybackState state)
@@ -144,6 +178,11 @@ void UIMain::setCurrentIndex(const QModelIndex &index)
 QListView *UIMain::listView()
 {
     return ui->listView;
+}
+
+QListView *UIMain::collectListView()
+{
+    return ui->collectListView;
 }
 
 QSlider *UIMain::progressSlider()
@@ -228,13 +267,6 @@ void UIMain::on_volumeBtn_clicked()
 
 void UIMain::on_loveBtn_clicked(bool checked)
 {
-    if(checked){
-        ui->loveBtn->setIcon(QIcon(":/icon/love.png"));
-        emit collected();
-    }
-    else {
-        ui->loveBtn->setIcon(QIcon(":/icon/dislove.png"));
-        emit notCollected();
-    }
+    this->collectStatusToggle(checked);
 }
 

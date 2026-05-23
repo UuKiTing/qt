@@ -7,6 +7,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QList>
+#include <QModelIndex>
 
 class DbManager : public QObject
 {
@@ -17,8 +18,11 @@ public:
     static DbManager& getInstance();
 
     QList<SongInfo> loadSongs();
+    QList<SongInfo> loadCollectSongs();
 
-    void appendData(const SongInfo &info);
+    void appendMusicData(const SongInfo &info);
+    void collectSong(const QModelIndex &index);
+    void disCollectSong(const QModelIndex &index);
 
 
 signals:

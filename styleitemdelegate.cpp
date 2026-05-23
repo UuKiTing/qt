@@ -1,6 +1,8 @@
 #include "styleitemdelegate.h"
 #include "global.h"
 #include <QPainter>
+#include <QApplication>
+#include <QMouseEvent>
 
 StyleItemDelegate::StyleItemDelegate(QObject *parent)
     : QStyledItemDelegate{parent}
@@ -12,6 +14,7 @@ void StyleItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     const QString title = index.data(Role::Title).toString();
     const QString artist = index.data(Role::Artist).toString();
     const int duration = index.data(Role::Duration).toInt();
+    const bool isFavorite = index.data(Role::IsFavorite).toBool();;
 
     const QColor blackColor = Qt::black;
     const QColor selectdColor(0x32, 0x59, 0xCE);
@@ -60,10 +63,38 @@ void StyleItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     painter->drawText(durRect, Qt::AlignRight | Qt::AlignVCenter, durationString(duration));
     painter->restore();
 
+
+    // 收藏按钮
+    painter->save();
+    QRect btnRect(option.rect.right() - 120, option.rect.center().y() - 10, 20, 20);
+
+    QIcon favIcon = isFavorite ? QIcon(":/icon/love.png") : QIcon(":/icon/dislove.png");
+    favIcon.paint(painter, btnRect);
+    painter->restore();
+
     QStyledItemDelegate::paint(painter, option, index);
 }
 
 QSize StyleItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     return QSize(option.rect.width(), 70);
+}
+
+bool StyleItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+{
+    if (event->type() == QEvent::MouseButtonRelease) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+        QRect btnRect(option.rect.right() - 120, option.rect.center().y() - 10, 20, 20);
+
+        if (btnRect.contains(mouseEvent->pos())) {
+            bool isFavo = index.data(Role::IsFavorite).toBool();
+            model->setData(index, !isFavo, Role::IsFavorite);
+
+            if(!isFavo) emit collected(index);
+            else emit notCollected(index);
+
+            return true;
+        }
+    }
+    return QStyledItemDelegate::editorEvent(event, model, option, index);
 }

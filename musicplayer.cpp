@@ -3,6 +3,7 @@
 #include <QVBoxLayout>
 #include <QSettings>
 #include <QTimer>
+#include <QListView>
 
 
 MusicPlayer::MusicPlayer(QWidget *parent)
@@ -12,7 +13,8 @@ MusicPlayer::MusicPlayer(QWidget *parent)
 
     m_listManager = new PlayListManager(this);
 
-    m_uiMain->setModel(m_listManager->model()); // 为listView设置Model
+    m_uiMain->setModel(m_uiMain->listView(), m_listManager->model());
+    m_uiMain->setModel(m_uiMain->collectListView(), m_listManager->collectModel());
 
     m_controller = new PlayerController(this);
 
@@ -20,6 +22,7 @@ MusicPlayer::MusicPlayer(QWidget *parent)
     progressSliderConnect(); // 进度条
     volumeSliderConnect(); // 音量条
     pageConnect();
+    collectConnect();
 
     loadSettings();
 
@@ -92,12 +95,8 @@ void MusicPlayer::playConnect()
         m_listManager->setMode(mode);
     });
     connect(m_listManager, &PlayListManager::modeChanged, m_uiMain, &UIMain::onModeChanged);
-
-
-    connect(m_uiMain, &UIMain::collected, [this](){
-
-    });
 }
+
 
 void MusicPlayer::progressSliderConnect()
 {
@@ -138,6 +137,36 @@ void MusicPlayer::pageConnect()
     connect(m_uiSideBar, &UISideBar::pageChanged, m_uiMain, &UIMain::switchStackedWidget);
 }
 
+void MusicPlayer::collectConnect()
+{
+    connect(m_uiMain, &UIMain::collected, [this](const QModelIndex &index){
+        collectSong(true, index);
+        m_listManager->addCollectSong(index);
+    });
+
+    connect(m_uiMain, &UIMain::notCollected, [this](const QModelIndex &index){
+        collectSong(false, index);
+        m_listManager->removeCollectSong(index);
+    });
+}
+
+void MusicPlayer::collectSong(bool isCollect, const QModelIndex &index)
+{
+    QModelIndex idx;
+    if(!index.isValid()) idx = m_listManager->index();
+    else idx = index;
+
+
+    if(isCollect) DbManager::getInstance().collectSong(idx);
+    else DbManager::getInstance().disCollectSong(idx);
+
+    m_listManager->setData(m_listManager->model(), idx, isCollect, Role::IsFavorite);
+
+    if(m_listManager->index() == index){
+        m_uiMain->collectIconToggle(isCollect);
+    }
+}
+
 
 void MusicPlayer::saveSettings()
 {
@@ -152,13 +181,19 @@ void MusicPlayer::loadSettings()
 {
     QSettings s;
     int playProgress = s.value("position", 0).toInt();
-    QStandardItem *item = m_listManager->item(s.value("currentRow", 0).toInt());
+    int row = s.value("currentRow", 0).toInt();
+
+
+    m_listManager->setCurrentRow(row);
+
+    QStandardItem *item = m_listManager->item(row);
     if(item == nullptr){
         return;
     }
 
     QModelIndex index = item->index();
     m_uiMain->setCurrentIndex(index);
+
     m_uiMain->onlistViewDbClicked(index, false);
 
     connect(m_controller->mediaPlayer(), &QMediaPlayer::mediaStatusChanged, this, [this, playProgress](QMediaPlayer::MediaStatus status){
@@ -189,4 +224,5 @@ void MusicPlayer::onSkipRequested(bool isNext)
 void MusicPlayer::closeEvent(QCloseEvent *event)
 {
     saveSettings();
+
 }
