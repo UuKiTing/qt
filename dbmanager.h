@@ -18,7 +18,6 @@ public:
     static DbManager& getInstance();
 
     QList<SongInfo> loadSongs();
-    QList<SongInfo> loadCollectSongs();
 
     void appendMusicData(const SongInfo &info);
     void collectSong(const QModelIndex &index);

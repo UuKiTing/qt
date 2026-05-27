@@ -126,6 +126,20 @@ public:
         verticalLayout_5->setContentsMargins(0, 0, 0, 0);
         collectListView = new QListView(page_2);
         collectListView->setObjectName("collectListView");
+        collectListView->setStyleSheet(QString::fromUtf8(" QListView {\n"
+"		background-color: white;\n"
+"        border: none;\n"
+"        outline: none;\n"
+"    }\n"
+"    QListView::item {\n"
+"        height: 48px;\n"
+"        padding: 6px 10px;\n"
+"        font-size: 14px;\n"
+"        color: #333333;\n"
+"        border-bottom: 1px solid #f0f0f0;\n"
+"    }\n"
+""));
+        collectListView->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
 
         verticalLayout_5->addWidget(collectListView);
 

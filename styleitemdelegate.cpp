@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QApplication>
 #include <QMouseEvent>
+#include <QSortFilterProxyModel>
 
 StyleItemDelegate::StyleItemDelegate(QObject *parent)
     : QStyledItemDelegate{parent}
@@ -88,10 +89,17 @@ bool StyleItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
         if (btnRect.contains(mouseEvent->pos())) {
             bool isFavo = index.data(Role::IsFavorite).toBool();
-            model->setData(index, !isFavo, Role::IsFavorite);
 
-            if(!isFavo) emit collected(index);
-            else emit notCollected(index);
+            QModelIndex sourceIndex;
+
+            QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel*>(model);
+
+            if(proxyModel) sourceIndex = proxyModel->mapToSource(index);
+            else sourceIndex = index;
+
+
+            if(!isFavo) emit collected(sourceIndex);
+            else emit cancelCollected(sourceIndex);
 
             return true;
         }

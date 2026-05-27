@@ -14,35 +14,34 @@ class MusicPlayer : public QWidget
 public:
     explicit MusicPlayer(QWidget *parent = nullptr);
 
-    void initUI();
+    void initLayout(); // 初始化布局
 
-    void playConnect();
-    void progressSliderConnect();
-    void volumeSliderConnect();
-    void pageConnect();
-    void collectConnect();
+    // 信号连接
+    void playConnect(); // 播放功能
+    void progressSliderConnect(); // 进度条
+    void volumeSliderConnect(); //  音量
+    void pageConnect(); // 页面切换
+    void collectConnect(); // 音乐收藏
 
-    void collectSong(bool isCollect, const QModelIndex &index = QModelIndex());
+    void collectSong(bool isCollect, const QModelIndex &index = QModelIndex()); // 收藏音乐
 
-
-    void saveSettings(); // 保存
-    void loadSettings(); // 加载
+    void saveSettings(); // 保存配置
+    void loadSettings(); // 加载配置
 
 signals:
 
 public slots:
-    void onSkipRequested(bool isNext);
+    void onSkipRequested(bool isNext); // 处理上/下一首音乐
 
 protected:
-    void closeEvent(QCloseEvent *event) override;
+    void closeEvent(QCloseEvent *event) override; // 程序窗口关闭事件
 
 private:
-    PlayerController *m_controller;
-    PlayListManager *m_listManager;
-    UIMain *m_uiMain;
-    UISideBar *m_uiSideBar;
-    UISearch *m_uiSearch;
-
+    PlayerController *m_controller; // 播放控制器
+    PlayListManager *m_listManager; // 音乐列表管理器
+    UIMain *m_uiMain; // 主界面
+    UISideBar *m_uiSideBar; // 侧边栏
+    UISearch *m_uiSearch; // 搜索栏
 
     bool m_isDragging = false;// 标志位：是否关闭播放器进度和进度条滑块的同步
 };

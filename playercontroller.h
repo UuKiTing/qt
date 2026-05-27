@@ -32,7 +32,7 @@ signals:
 public slots:
     void onSongPlayRequested(const QModelIndex &index,  bool autoPlay); // 播放音乐
     void onPlayPauseRequested(); // 自动播放/暂停
-    void onSkipPlayRequested(const QModelIndex &index);
+    void onSkipPlayRequested(const QModelIndex &index); // 上/下一首音乐
 
 private:
     QMediaPlayer *m_player;

@@ -126,7 +126,26 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QListView" name="collectListView"/>
+        <widget class="QListView" name="collectListView">
+         <property name="styleSheet">
+          <string notr="true"> QListView {
+		background-color: white;
+        border: none;
+        outline: none;
+    }
+    QListView::item {
+        height: 48px;
+        padding: 6px 10px;
+        font-size: 14px;
+        color: #333333;
+        border-bottom: 1px solid #f0f0f0;
+    }
+</string>
+         </property>
+         <property name="editTriggers">
+          <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

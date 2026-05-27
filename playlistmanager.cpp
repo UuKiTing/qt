@@ -12,11 +12,13 @@ PlayListManager::PlayListManager(QObject *parent)
     : QObject{parent}
 {
     m_model = new QStandardItemModel(this);
-    m_collectModel = new QStandardItemModel(this);
+    m_collectModel = new CollectFilterProxyModel(this);
+    m_collectModel->setSourceModel(m_model);
+
 
     // generateData();
     loadPlayList();
-    loadCollectPlayList();
+    // loadCollectPlayList();
 }
 
 
@@ -41,30 +43,6 @@ void PlayListManager::loadPlayList()
         item->setData(info.isFavo, Role::IsFavorite);
 
         m_model->appendRow(item);
-    }
-}
-
-void PlayListManager::loadCollectPlayList()
-{
-    QDir dir = QDir(QDir::currentPath());
-
-    for(SongInfo &info : DbManager::getInstance().loadCollectSongs()){
-        QStandardItem *item = new QStandardItem;
-
-        QString filePath = dir.filePath(info.filePath);
-        QString coverPath = dir.filePath(info.cover);
-
-        item->setData(info.id, Role::Id);
-        item->setData(info.title, Role::Title);
-        item->setData(info.artist, Role::Artist);
-        item->setData(info.duration, Role::Duration);
-        item->setData(filePath, Role::FilePath);
-        item->setData(coverPath, Role::Cover);
-        item->setData(durationString(info.duration), Role::DurationString);
-        item->setData(false, Role::IsPlaying);
-        item->setData(true, Role::IsFavorite);
-
-        m_collectModel->appendRow(item);
     }
 }
 
@@ -111,67 +89,18 @@ QJsonObject PlayListManager::parseMusic(const QString &filePath)
     return obj;
 }
 
-void PlayListManager::addCollectSong(const QModelIndex &index)
-{
-    QModelIndex idx;
-    if(!index.isValid()) idx = this->index();
-    else idx = index;
-
-    QStandardItem *item = new QStandardItem;
-
-    QDir dir = QDir(QDir::currentPath());
-    QString filePath = dir.filePath(idx.data(Role::FilePath).toString());
-    QString coverPath = dir.filePath(idx.data(Role::Cover).toString());
-
-    item->setData(idx.data(Role::Id), Role::Id);
-    item->setData(idx.data(Role::Title), Role::Title);
-    item->setData(idx.data(Role::Artist), Role::Artist);
-    item->setData(idx.data(Role::Duration), Role::Duration);
-    item->setData(filePath, Role::FilePath);
-    item->setData(coverPath, Role::Cover);
-    item->setData(durationString(idx.data(Role::Duration).toInt()), Role::DurationString);
-    item->setData(false, Role::IsPlaying);
-    item->setData(true, Role::IsFavorite);
-
-    m_collectModel->appendRow(item);
-}
-
-bool PlayListManager::removeCollectSong(const QModelIndex &index)
-{
-    QModelIndex idx;
-    if(!index.isValid()) idx = this->index();
-    else idx = index;
-
-    int rowCount = m_collectModel->rowCount();
-    int id = idx.data(Role::Id).toInt();
-
-    for(int i = 0; i < rowCount; i++){
-        QStandardItem *item = m_collectModel->item(i);
-
-        if(item && item->data(Role::Id) == id){
-            m_collectModel->removeRow(item->row());
-            return true;
-        }
-    }
-
-    return false;
-}
-
 
 void PlayListManager::setCurrentRow(int row)
 {
     curRow = row;
 }
 
+
 void PlayListManager::setIsPlayingData(const QModelIndex &index, bool isPlaying)
 {
     m_model->setData(index, isPlaying, Role::IsPlaying);
 }
 
-void PlayListManager::setCollectData(const QModelIndex &index, bool isCollect)
-{
-    m_model->setData(index, isCollect, Role::IsFavorite);
-}
 
 int PlayListManager::setNextRow(bool isNext)
 {
@@ -200,19 +129,18 @@ void PlayListManager::setMode(PlayMode mode)
     emit modeChanged(Mode);
 }
 
-void PlayListManager::setData(QStandardItemModel *model, const QModelIndex &index, const QVariant &value, int role)
+void PlayListManager::setData(QAbstractItemModel *model, const QModelIndex &index, const QVariant &value, int role)
 {
     model->setData(index, value, role);
+
 }
 
-
-
-QStandardItemModel *PlayListManager::model()
+QAbstractItemModel *PlayListManager::model()
 {
     return m_model;
 }
 
-QStandardItemModel *PlayListManager::collectModel()
+QAbstractItemModel *PlayListManager::collectModel()
 {
     return m_collectModel;
 }
@@ -224,7 +152,7 @@ QStandardItem *PlayListManager::item(int row)
 
 QModelIndex PlayListManager::index()
 {
-    return m_model->index(this->currentRow(), 0);
+    return m_model->index(curRow, 0);
 }
 
 int PlayListManager::currentRow()

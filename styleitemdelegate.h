@@ -14,11 +14,10 @@ public:
 
 signals:
     void collected(const QModelIndex &index);
-    void notCollected(const QModelIndex &index);
+    void cancelCollected(const QModelIndex &index);
 
 protected:
     virtual bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
-
 };
 
 #endif // STYLEITEMDELEGATE_H

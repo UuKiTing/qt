@@ -1,6 +1,7 @@
 #include "dbmanager.h"
 #include "global.h"
 #include <QStandardPaths>
+#include <QSqlRecord>
 
 
 DbManager::DbManager(QObject *parent)
@@ -24,7 +25,14 @@ DbManager &DbManager::getInstance()
 QList<SongInfo> DbManager::loadSongs()
 {
     QSqlQuery query;
-    query.exec("SELECT * FROM songs left join collection on songs.id = collection.music_id");
+    QString sql = QString("SELECT * FROM songs LEFT JOIN (SELECT music_id FROM collection WHERE user_id = %1) as coll "
+                          "on coll.music_id = songs.id;").arg(1);
+    query.exec(sql);
+
+    int count = query.record().count();
+
+    if(count < 1) return;
+
     QList<SongInfo> list;
 
     while(query.next()){
@@ -35,8 +43,8 @@ QList<SongInfo> DbManager::loadSongs()
         info.duration = query.value(3).toInt();
         info.filePath = query.value(4).toString();
         info.cover = query.value(5).toString();
-        if(query.value(6).toString().isEmpty()) info.isFavo = false;
-        else info.isFavo = true;
+        if(query.value(count - 1).toInt()) info.isFavo = true;
+        else info.isFavo = false;
 
         list.append(info);
     }
@@ -44,31 +52,11 @@ QList<SongInfo> DbManager::loadSongs()
     return list;
 }
 
-QList<SongInfo> DbManager::loadCollectSongs()
-{
-    QSqlQuery query;
-    query.exec("SELECT * FROM songs inner join collection on collection.music_id = songs.id");
-    QList<SongInfo> list;
-
-    while(query.next()){
-        SongInfo info;
-        info.id = query.value(0).toInt();
-        info.title = query.value(1).toString();
-        info.artist = query.value(2).toString();
-        info.duration = query.value(3).toInt();
-        info.filePath = query.value(4).toString();
-        info.cover = query.value(5).toString();
-
-        list.append(info);
-    }
-
-    return list;
-}
 
 void DbManager::appendMusicData(const SongInfo &info)
 {
     QSqlQuery query;
-    query.prepare("insert into songs values(:id, :title, :artist, :duration, :filePath, :cover)");
+    query.prepare("INSERT INTO songs VALUES(:id, :title, :artist, :duration, :filePath, :cover)");
     query.bindValue(":id", info.id);
     query.bindValue(":title", info.title);
     query.bindValue(":artist", info.artist);
@@ -81,7 +69,7 @@ void DbManager::appendMusicData(const SongInfo &info)
 void DbManager::collectSong(const QModelIndex &index)
 {
     QSqlQuery query;
-    query.prepare("insert into collection (user_id, music_id) values(:user_id, :music_id);");
+    query.prepare("INSERT INTO collection (user_id, music_id)VALUES(:user_id, :music_id)");
     query.bindValue(":user_id", 1);
     query.bindValue(":music_id", index.data(Role::Id));
     query.exec();
@@ -90,7 +78,7 @@ void DbManager::collectSong(const QModelIndex &index)
 void DbManager::disCollectSong(const QModelIndex &index)
 {
     QSqlQuery query;
-    query.exec(QString("delete from collection where user_id = %1 and music_id = %2").arg(1).arg(index.data(Role::Id).toInt()));
+    query.exec(QString("DELETE FROM collection WHERE user_id = %1 AND music_id = %2").arg(1).arg(index.data(Role::Id).toInt()));
 }
 
 

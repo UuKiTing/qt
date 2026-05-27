@@ -13,6 +13,7 @@ LIBS += -L$$PWD/taglib/lib -ltag
 
 
 SOURCES += \
+    collectfilterproxymodel.cpp \
     dbmanager.cpp \
     global.cpp \
     main.cpp \
@@ -25,6 +26,7 @@ SOURCES += \
     uisidebar.cpp
 
 HEADERS += \
+    collectfilterproxymodel.h \
     dbmanager.h \
     global.h \
     musicplayer.h \

@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "dbmanager.h"
+#include "collectfilterproxymodel.h"
 #include <QObject>
 #include <QStandardItemModel>
 #include <QList>
@@ -17,23 +18,20 @@ public:
     explicit PlayListManager(QObject *parent = nullptr);
 
 
-    void loadPlayList();
-    void loadCollectPlayList();
-    void generateData();
-    QJsonObject parseMusic(const QString &filePath);
-    void addCollectSong(const QModelIndex &index);
-    bool removeCollectSong(const QModelIndex &index);
+    void loadPlayList(); // 加载音乐列表
+
+    void generateData(); // 生成音乐数据
+    QJsonObject parseMusic(const QString &filePath); // 解析音乐文件
 
     void setCurrentRow(int row); // 设置model当前的行号
     void setIsPlayingData(const QModelIndex &index, bool isPlaying);
-    void setCollectData(const QModelIndex &index, bool isCollect);
     int setNextRow(bool isNext);
     void setMode(PlayMode mode);
-    void setData(QStandardItemModel *model, const QModelIndex &index, const QVariant &value, int role = Role::Invalid);
+    void setData(QAbstractItemModel *model, const QModelIndex &index, const QVariant &value, int role = Role::Invalid);
 
 
-    QStandardItemModel* model();
-    QStandardItemModel* collectModel();
+    QAbstractItemModel* model();
+    QAbstractItemModel* collectModel();
     int modelRowCount();
     QStandardItem* item(int row);
     QModelIndex index();
@@ -45,7 +43,8 @@ signals:
 
 private:
     QStandardItemModel *m_model;
-    QStandardItemModel *m_collectModel;
+    // QStandardItemModel *m_collectModel;
+    CollectFilterProxyModel *m_collectModel;
     DbManager *m_dbManager;
 
     int curRow = -1;

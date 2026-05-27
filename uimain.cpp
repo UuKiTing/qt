@@ -5,7 +5,6 @@
 #include <QWidgetAction>
 #include <QMenu>
 
-
 UIMain::UIMain(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::UIMain)
@@ -27,6 +26,14 @@ UIMain::~UIMain()
     delete ui;
 }
 
+
+void UIMain::connectSingal()
+{
+    connect(m_delegate, &StyleItemDelegate::collected, this, &UIMain::collected);
+    connect(m_delegate, &StyleItemDelegate::cancelCollected, this, &UIMain::cancelCollected);
+}
+
+
 void UIMain::initVolumeMenu()
 {
     m_volumeMenu = new QMenu(this);
@@ -35,30 +42,28 @@ void UIMain::initVolumeMenu()
     m_volumeSlider->setRange(0, 100);
 
     m_volumeMenu->setStyleSheet(R"(
+        QSlider {
+            background-color: transparent;
+        }
 
-QSlider {
-    background-color: transparent;
-}
+        QSlider::groove:vertical {
+            background: #E3F2FD;
+            width: 4px;
+        }
 
-QSlider::groove:vertical {
-    background: #E3F2FD;
-    width: 4px;
-}
+        QSlider::add-page:vertical {
+            background: #64B5F6;
+            width: 4px;
+        }
 
-QSlider::add-page:vertical {
-    background: #64B5F6;
-    width: 4px;
-}
-
-QSlider::handle:vertical {
-    background: #FFFFFF;q
-    height: 10px;
-    width: 15px;
-    border-radius: 5px;
-    margin: 0 -6px;
-    border: 1px solid #64B5F6;
-}
-)");
+        QSlider::handle:vertical {
+            background: #FFFFFF;q
+            height: 10px;
+            width: 15px;
+            border-radius: 5px;
+            margin: 0 -6px;
+            border: 1px solid #64B5F6;
+        })");
 
 
     QWidgetAction *action = new QWidgetAction(m_volumeMenu);
@@ -67,19 +72,14 @@ QSlider::handle:vertical {
     m_volumeMenu->addAction(action);
 }
 
-void UIMain::connectSingal()
-{
-    connect(m_delegate, &StyleItemDelegate::collected, this, &UIMain::collected);
-    connect(m_delegate, &StyleItemDelegate::notCollected, this, &UIMain::notCollected);
-}
 
 void UIMain::setPlayStyle(const QModelIndex &index)
 {
-    this->setTotalDuration(durationString(index.data(Role::Duration).toInt()));
-    this->setCoverPixmap(index.data(Role::Cover).toString());
-    this->setTitleAndArtist(index.data(Role::Title).toString(),
+    this->setTotalDuration(durationString(index.data(Role::Duration).toInt())); // 设置最大时长
+    this->setCoverPixmap(index.data(Role::Cover).toString()); // 设置音乐封面
+    this->setTitleAndArtist(index.data(Role::Title).toString(), // 设置音乐名称和作者
                             index.data(Role::Artist).toString());
-    if(index.data(Role::IsFavorite).toBool()){
+    if(index.data(Role::IsFavorite).toBool()){ // 音乐是否收藏
         ui->loveBtn->setIcon(QIcon(":/icon/love.png"));
         ui->loveBtn->setChecked(true);
     }
@@ -98,21 +98,16 @@ void UIMain::collectStatusToggle(bool checked)
 {
     collectIconToggle(checked);
     if(checked) emit collected();
-    else emit notCollected();
+    else emit cancelCollected();
 }
 
 void UIMain::collectIconToggle(bool isFavo)
 {
-    if(isFavo){
-        ui->loveBtn->setIcon(QIcon(":/icon/love.png"));
-
-    }
-    else {
-        ui->loveBtn->setIcon(QIcon(":/icon/dislove.png"));
-    }
+    if(isFavo) ui->loveBtn->setIcon(QIcon(":/icon/love.png"));
+    else ui->loveBtn->setIcon(QIcon(":/icon/dislove.png"));
 }
 
-void UIMain::setModel(QAbstractItemView *view, QStandardItemModel *model)
+void UIMain::setModel(QAbstractItemView *view, QAbstractItemModel *model)
 {
     view->setModel(model);
 }
@@ -125,15 +120,16 @@ void UIMain::setPlayBtnIcon(QMediaPlayer::PlaybackState state)
     else if(state == QMediaPlayer::PausedState){
         ui->playBtn->setIcon(QIcon(":/icon/pause.png"));
     }
-    else if(state == QMediaPlayer::StoppedState){
-
-    }
 }
 
 void UIMain::setCurDuration(qint64 position)
 {
-    QString str = durationString(position / 1000);
-    ui->curDuration->setText(str);
+    ui->curDuration->setText(durationString(position / 1000));
+}
+
+void UIMain::setTotalDuration(const QString &durationString)
+{
+    ui->totalDuration->setText(durationString);
 }
 
 void UIMain::setProgressSliderRange(qint64 duration)
@@ -156,10 +152,6 @@ void UIMain::setVolumeValue(float volume)
     m_volumeSlider->setValue(volume * 100);
 }
 
-void UIMain::setTotalDuration(const QString &durationString)
-{
-    ui->totalDuration->setText(durationString);
-}
 
 void UIMain::setTitleAndArtist(const QString &title, const QString &artist)
 {
@@ -218,7 +210,7 @@ void UIMain::onModeChanged(PlayMode mode)
     }
 }
 
-void UIMain::onlistViewDbClicked(const QModelIndex &index, bool autoPlay)
+void UIMain::onListViewDbClicked(const QModelIndex &index, bool autoPlay)
 {
     this->setPlayStyle(index);
     emit songPlayRequest(index, autoPlay);
@@ -227,9 +219,14 @@ void UIMain::onlistViewDbClicked(const QModelIndex &index, bool autoPlay)
 
 void UIMain::on_listView_doubleClicked(const QModelIndex &index)
 {
-    this->onlistViewDbClicked(index, true);
+    this->onListViewDbClicked(index, true);
 }
 
+
+void UIMain::on_collectListView_doubleClicked(const QModelIndex &index)
+{
+    this->onListViewDbClicked(index, true);
+}
 
 void UIMain::on_playBtn_clicked()
 {
@@ -245,17 +242,15 @@ void UIMain::on_modeBtn_clicked()
 
 void UIMain::on_nextBtn_clicked()
 {
-    if(ui->listView->model()->rowCount() > 0 ){
+    if(ui->listView->model()->rowCount() > 0)
         emit skipRequested(true);
-    }
 }
 
 
 void UIMain::on_lastBtn_clicked()
 {
-    if(ui->listView->model()->rowCount() > 0 ){
+    if(ui->listView->model()->rowCount() > 0)
         emit skipRequested(false);
-    }
 }
 
 
@@ -269,4 +264,5 @@ void UIMain::on_loveBtn_clicked(bool checked)
 {
     this->collectStatusToggle(checked);
 }
+
 

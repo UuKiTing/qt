@@ -9,26 +9,25 @@
 MusicPlayer::MusicPlayer(QWidget *parent)
     : QWidget{parent}
 {
-    initUI();
+    initLayout();
+
+    m_controller = new PlayerController(this);
 
     m_listManager = new PlayListManager(this);
 
     m_uiMain->setModel(m_uiMain->listView(), m_listManager->model());
     m_uiMain->setModel(m_uiMain->collectListView(), m_listManager->collectModel());
 
-    m_controller = new PlayerController(this);
-
-    playConnect(); // 播放
-    progressSliderConnect(); // 进度条
-    volumeSliderConnect(); // 音量条
+    playConnect();
+    progressSliderConnect();
+    volumeSliderConnect();
     pageConnect();
     collectConnect();
 
     loadSettings();
-
 }
 
-void MusicPlayer::initUI()
+void MusicPlayer::initLayout()
 {
     this->setWindowIcon(QIcon(":/icon/icon.png"));
 
@@ -56,8 +55,8 @@ void MusicPlayer::playConnect()
 
     // 双击播放
     connect(m_uiMain, &UIMain::songPlayRequest, m_controller, &PlayerController::onSongPlayRequested);
-    connect(m_uiMain, &UIMain::songPlayRequest,
-            [this](const QModelIndex &index){m_listManager->setCurrentRow(index.row());});
+    connect(m_uiMain, &UIMain::songPlayRequest, [this](const QModelIndex &index)
+            {m_listManager->setCurrentRow(index.row());});
 
     // 手动控制播放/停止
     connect(m_uiMain, &UIMain::playPauseRequested, m_controller, &PlayerController::onPlayPauseRequested);
@@ -68,7 +67,7 @@ void MusicPlayer::playConnect()
     // 播放歌曲
     connect(m_controller, &PlayerController::playbackStarted, this, &MusicPlayer::onSkipRequested);
 
-    // 当前音乐播放的row
+    // 记录当前播放音乐的row
     connect(m_controller, &PlayerController::currentRowChanged, m_listManager, &PlayListManager::setCurrentRow);
 
     // 标识正在播放
@@ -76,17 +75,14 @@ void MusicPlayer::playConnect()
 
     // 解除正在播放标识
     connect(m_controller, &PlayerController::isPlayingRestored, [this](){
-        int row = m_listManager->currentRow();
-        if(row < 0) return;
-        QModelIndex index = m_listManager->item(row)->index();
-        m_listManager->setIsPlayingData(index, false);
+        QModelIndex index = m_listManager->index();
+        if(index.isValid()) m_listManager->setIsPlayingData(index, false);
     });
 
     // 播放结束自动下一首
     connect(m_controller->mediaPlayer(), &QMediaPlayer::mediaStatusChanged, [this](QMediaPlayer::MediaStatus status){
-        if(status == QMediaPlayer::MediaStatus::EndOfMedia){
+        if(status == QMediaPlayer::MediaStatus::EndOfMedia)
             this->onSkipRequested(true);
-        }
     });
 
     // 播放模式切换
@@ -112,9 +108,7 @@ void MusicPlayer::progressSliderConnect()
     });
 
     // 拖动开始：标记正在拖动
-    connect(m_uiMain->progressSlider(), &QSlider::sliderPressed, [this](){
-        m_isDragging = true;
-    });
+    connect(m_uiMain->progressSlider(), &QSlider::sliderPressed, [this](){ m_isDragging = true;});
 
     // 拖动结束：标记结束拖动
     connect(m_uiMain->progressSlider(), &QSlider::sliderReleased, [this](){
@@ -123,39 +117,37 @@ void MusicPlayer::progressSliderConnect()
     });
 }
 
+
 void MusicPlayer::volumeSliderConnect()
 {
-    connect(m_uiMain->volumeSlider(), &QSlider::valueChanged,
-            m_controller, &PlayerController::setVolume);
-
-    connect(m_controller->audioOutput(), &QAudioOutput::volumeChanged,
-            m_uiMain, &UIMain::setVolumeValue);
+    connect(m_uiMain->volumeSlider(), &QSlider::valueChanged, m_controller, &PlayerController::setVolume);
+    connect(m_controller->audioOutput(), &QAudioOutput::volumeChanged, m_uiMain, &UIMain::setVolumeValue);
 }
+
 
 void MusicPlayer::pageConnect()
 {
     connect(m_uiSideBar, &UISideBar::pageChanged, m_uiMain, &UIMain::switchStackedWidget);
 }
 
+
 void MusicPlayer::collectConnect()
 {
     connect(m_uiMain, &UIMain::collected, [this](const QModelIndex &index){
         collectSong(true, index);
-        m_listManager->addCollectSong(index);
     });
 
-    connect(m_uiMain, &UIMain::notCollected, [this](const QModelIndex &index){
+    connect(m_uiMain, &UIMain::cancelCollected, [this](const QModelIndex &index){
         collectSong(false, index);
-        m_listManager->removeCollectSong(index);
     });
 }
+
 
 void MusicPlayer::collectSong(bool isCollect, const QModelIndex &index)
 {
     QModelIndex idx;
     if(!index.isValid()) idx = m_listManager->index();
     else idx = index;
-
 
     if(isCollect) DbManager::getInstance().collectSong(idx);
     else DbManager::getInstance().disCollectSong(idx);
@@ -177,24 +169,21 @@ void MusicPlayer::saveSettings()
     s.setValue("playMode", static_cast<int>(m_listManager->mode()));
 }
 
+
 void MusicPlayer::loadSettings()
 {
     QSettings s;
     int playProgress = s.value("position", 0).toInt();
     int row = s.value("currentRow", 0).toInt();
 
-
     m_listManager->setCurrentRow(row);
 
-    QStandardItem *item = m_listManager->item(row);
-    if(item == nullptr){
-        return;
-    }
+    QModelIndex index = m_listManager->index();
+    if(!index.isValid()) return;
 
-    QModelIndex index = item->index();
     m_uiMain->setCurrentIndex(index);
 
-    m_uiMain->onlistViewDbClicked(index, false);
+    m_uiMain->onListViewDbClicked(index, false);
 
     connect(m_controller->mediaPlayer(), &QMediaPlayer::mediaStatusChanged, this, [this, playProgress](QMediaPlayer::MediaStatus status){
         if (status == QMediaPlayer::LoadedMedia) {
@@ -207,22 +196,25 @@ void MusicPlayer::loadSettings()
     m_listManager->setMode(static_cast<PlayMode>(s.value("playMode", 0).toInt()));
 }
 
+
 void MusicPlayer::onSkipRequested(bool isNext)
 {
     emit m_controller->isPlayingRestored();
 
     int currentRow = m_listManager->setNextRow(isNext);
+    if(currentRow < 0 || currentRow > m_listManager->modelRowCount()){
+        return;
+    }
 
-    QStandardItem *item = m_listManager->item(currentRow);
-    QModelIndex index = item->index();
-
+    QModelIndex index = m_listManager->index();
     m_uiMain->setCurrentIndex(index);
     m_uiMain->setPlayStyle(index);
+
     m_controller->onSkipPlayRequested(index);
 }
+
 
 void MusicPlayer::closeEvent(QCloseEvent *event)
 {
     saveSettings();
-
 }

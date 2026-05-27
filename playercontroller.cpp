@@ -15,13 +15,12 @@ PlayerController::PlayerController(QObject *parent)
 void PlayerController::setSource(const QModelIndex &index)
 {
     QString path = index.data(Role::FilePath).toString();
-    QUrl url = QUrl(path);
-    m_player->setSource(url);
+    m_player->setSource(QUrl(path));
 }
 
 void PlayerController::play(bool autoPlay)
 {
-    if(autoPlay)  m_player->play();
+    if(autoPlay) m_player->play();
 }
 
 void PlayerController::setPlayProgress(int value)
