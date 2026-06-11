@@ -27,8 +27,8 @@ public:
     QWidget *widget;
     QHBoxLayout *horizontalLayout;
     QPushButton *pushButton_2;
-    QLineEdit *lineEdit;
-    QPushButton *pushButton;
+    QLineEdit *searchBar;
+    QPushButton *searchBtn;
     QSpacerItem *horizontalSpacer_2;
 
     void setupUi(QWidget *UISearch)
@@ -36,6 +36,7 @@ public:
         if (UISearch->objectName().isEmpty())
             UISearch->setObjectName("UISearch");
         UISearch->resize(679, 58);
+        UISearch->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
         horizontalLayout_2 = new QHBoxLayout(UISearch);
         horizontalLayout_2->setSpacing(0);
         horizontalLayout_2->setObjectName("horizontalLayout_2");
@@ -57,27 +58,28 @@ public:
 
         horizontalLayout->addWidget(pushButton_2);
 
-        lineEdit = new QLineEdit(widget);
-        lineEdit->setObjectName("lineEdit");
-        lineEdit->setMinimumSize(QSize(300, 30));
-        lineEdit->setMaximumSize(QSize(300, 16777215));
-        lineEdit->setStyleSheet(QString::fromUtf8("border-radius: 5px;\n"
+        searchBar = new QLineEdit(widget);
+        searchBar->setObjectName("searchBar");
+        searchBar->setMinimumSize(QSize(300, 30));
+        searchBar->setMaximumSize(QSize(300, 16777215));
+        searchBar->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+        searchBar->setStyleSheet(QString::fromUtf8("border-radius: 5px;\n"
 "background-color: #E3E3E3;\n"
 "padding-left: 5px;"));
 
-        horizontalLayout->addWidget(lineEdit);
+        horizontalLayout->addWidget(searchBar);
 
-        pushButton = new QPushButton(widget);
-        pushButton->setObjectName("pushButton");
-        pushButton->setMinimumSize(QSize(30, 30));
-        pushButton->setMaximumSize(QSize(30, 30));
+        searchBtn = new QPushButton(widget);
+        searchBtn->setObjectName("searchBtn");
+        searchBtn->setMinimumSize(QSize(30, 30));
+        searchBtn->setMaximumSize(QSize(30, 30));
         QIcon icon1;
         icon1.addFile(QString::fromUtf8(":/icon/search.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
-        pushButton->setIcon(icon1);
-        pushButton->setIconSize(QSize(22, 22));
-        pushButton->setFlat(true);
+        searchBtn->setIcon(icon1);
+        searchBtn->setIconSize(QSize(22, 22));
+        searchBtn->setFlat(true);
 
-        horizontalLayout->addWidget(pushButton);
+        horizontalLayout->addWidget(searchBtn);
 
         horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
 
@@ -96,8 +98,8 @@ public:
     {
         UISearch->setWindowTitle(QCoreApplication::translate("UISearch", "Form", nullptr));
         pushButton_2->setText(QString());
-        lineEdit->setPlaceholderText(QCoreApplication::translate("UISearch", "\346\220\234\347\264\242\351\237\263\344\271\220", nullptr));
-        pushButton->setText(QString());
+        searchBar->setPlaceholderText(QCoreApplication::translate("UISearch", "\346\220\234\347\264\242\351\237\263\344\271\220", nullptr));
+        searchBtn->setText(QString());
     } // retranslateUi
 
 };

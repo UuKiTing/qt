@@ -37,7 +37,7 @@ QPixmap roundPixmap(const QPixmap &source, const QSize &size, int radius)
     return result;
 }
 
-SongInfo& toSongInfo(const QModelIndex &index)
+SongInfo toSongInfo(const QModelIndex &index)
 {
     SongInfo info;
 

@@ -13,6 +13,7 @@ LIBS += -L$$PWD/taglib/lib -ltag
 
 
 SOURCES += \
+    appmediator.cpp \
     collectfilterproxymodel.cpp \
     dbmanager.cpp \
     global.cpp \
@@ -20,24 +21,32 @@ SOURCES += \
     musicplayer.cpp \
     playercontroller.cpp \
     playlistmanager.cpp \
+    searchbardelegate.cpp \
+    searchfilterproxymodel.cpp \
+    searchpreviewpanel.cpp \
     styleitemdelegate.cpp \
     uimain.cpp \
     uisearch.cpp \
     uisidebar.cpp
 
 HEADERS += \
+    appmediator.h \
     collectfilterproxymodel.h \
     dbmanager.h \
     global.h \
     musicplayer.h \
     playercontroller.h \
     playlistmanager.h \
+    searchbardelegate.h \
+    searchfilterproxymodel.h \
+    searchpreviewpanel.h \
     styleitemdelegate.h \
     uimain.h \
     uisearch.h \
     uisidebar.h
 
 FORMS += \
+    searchpreviewpanel.ui \
     uimain.ui \
     uisearch.ui \
     uisidebar.ui

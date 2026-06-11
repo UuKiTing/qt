@@ -50,7 +50,7 @@ public:
 signals:
     void songPlayRequest(const QModelIndex &index, bool autoPlay); // 播放歌曲
     void playPauseRequested(); // 播放与暂停
-    void skipRequested(bool isNext); // 上/下一首音乐
+    void skipPlayRequested(bool isNext); // 上/下一首音乐
     void modeChangeRequested(); // 播放模式更改
     void collected(const QModelIndex &index = QModelIndex()); // 收藏音乐
     void cancelCollected(const QModelIndex &index = QModelIndex()); // 取消收藏音乐

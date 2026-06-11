@@ -57,7 +57,7 @@ void UIMain::initVolumeMenu()
         }
 
         QSlider::handle:vertical {
-            background: #FFFFFF;q
+            background: #FFFFFF;
             height: 10px;
             width: 15px;
             border-radius: 5px;
@@ -243,14 +243,14 @@ void UIMain::on_modeBtn_clicked()
 void UIMain::on_nextBtn_clicked()
 {
     if(ui->listView->model()->rowCount() > 0)
-        emit skipRequested(true);
+        emit skipPlayRequested(true);
 }
 
 
 void UIMain::on_lastBtn_clicked()
 {
     if(ui->listView->model()->rowCount() > 0)
-        emit skipRequested(false);
+        emit skipPlayRequested(false);
 }
 
 

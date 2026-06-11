@@ -36,13 +36,29 @@ enum PlayMode{
     Count
 };
 
+class MainPage {
+public:
+    enum StackedWidgetIndex {
+        Main = 0,
+        Collect,
+        Search
+    };
+};
+
+class SearchPage {
+public:
+    enum StackedWidgetIndex {
+        Main = 0,
+        Search
+    };
+};
+
 
 QString durationString(int duration); // 返回 "03:24" 格式
 
 QPixmap roundPixmap(const QPixmap &source, const QSize &size, int radius);
 
-SongInfo& toSongInfo(const QModelIndex &index);
-
+SongInfo toSongInfo(const QModelIndex &index);
 
 #endif // GLOBAL_H
 

@@ -31,8 +31,6 @@ QList<SongInfo> DbManager::loadSongs()
 
     int count = query.record().count();
 
-    if(count < 1) return;
-
     QList<SongInfo> list;
 
     while(query.next()){

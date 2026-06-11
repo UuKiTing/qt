@@ -4,6 +4,7 @@
 #include "global.h"
 #include "dbmanager.h"
 #include "collectfilterproxymodel.h"
+#include "searchfilterproxymodel.h"
 #include <QObject>
 #include <QStandardItemModel>
 #include <QList>
@@ -29,9 +30,12 @@ public:
     void setMode(PlayMode mode);
     void setData(QAbstractItemModel *model, const QModelIndex &index, const QVariant &value, int role = Role::Invalid);
 
+    void search(QString &text);
+
 
     QAbstractItemModel* model();
-    QAbstractItemModel* collectModel();
+    CollectFilterProxyModel* collectModel();
+    SearchFilterProxyModel* searchModel();
     int modelRowCount();
     QStandardItem* item(int row);
     QModelIndex index();
@@ -43,13 +47,13 @@ signals:
 
 private:
     QStandardItemModel *m_model;
-    // QStandardItemModel *m_collectModel;
     CollectFilterProxyModel *m_collectModel;
+    SearchFilterProxyModel *m_searchModel;
     DbManager *m_dbManager;
 
     int curRow = -1;
 
-    PlayMode Mode = PlayMode::Loop; // 播放模式
+    PlayMode m_mode = PlayMode::Loop; // 播放模式
 };
 
 #endif // PLAYLISTMANAGER_H

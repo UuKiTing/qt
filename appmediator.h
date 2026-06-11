@@ -1,0 +1,48 @@
+#ifndef APPMEDIATOR_H
+#define APPMEDIATOR_H
+
+#include "uimain.h"
+#include "uisearch.h"
+#include "uisidebar.h"
+#include "playercontroller.h"
+#include "playlistmanager.h"
+#include <QObject>
+#include <QModelIndex>
+
+class AppMediator : public QObject
+{
+    Q_OBJECT
+public:
+    explicit AppMediator(QObject *parent = nullptr);
+
+    void setPlayer(PlayerController *controller);
+    void setListManager(PlayListManager *listManager);
+    void setUIMain(UIMain *uiMain);
+    void setUISideBar(UISideBar *uiSideBar);
+    void setUISearch(UISearch *uiSearch);
+
+    void connectSignal();
+    void playConnect(); // 播放功能
+    void progressSliderConnect(); // 进度条
+    void volumeSliderConnect(); //  音量
+    void pageConnect(); // 页面切换
+    void collectConnect(); // 音乐收藏
+
+    void collectSong(bool isCollect, const QModelIndex &index = QModelIndex()); // 收藏音乐
+
+signals:
+
+private slots:
+    void onSkipPlayRequested(bool isNext);
+
+private:
+    PlayerController *m_controller{}; // 播放控制器
+    PlayListManager *m_listManager{}; // 音乐列表管理器
+    UIMain *m_uiMain{}; // 主界面
+    UISideBar *m_uiSideBar{}; // 侧边栏
+    UISearch *m_uiSearch{}; // 搜索栏
+
+    bool m_isDragging = false;// 标志位：是否关闭播放器进度和进度条滑块的同步
+};
+
+#endif // APPMEDIATOR_H

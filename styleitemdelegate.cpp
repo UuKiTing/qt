@@ -97,7 +97,6 @@ bool StyleItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
             if(proxyModel) sourceIndex = proxyModel->mapToSource(index);
             else sourceIndex = index;
 
-
             if(!isFavo) emit collected(sourceIndex);
             else emit cancelCollected(sourceIndex);
 

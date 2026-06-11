@@ -11,6 +11,8 @@ UISideBar::UISideBar(QWidget *parent)
     init();
 
     connectSignals();
+
+
 }
 
 UISideBar::~UISideBar()
@@ -32,7 +34,7 @@ void UISideBar::connectSignals()
 {
     connect(ui->homeBtn, &QToolButton::toggled, [this](bool checked){
         if(checked) {
-            emit pageChanged(0);
+            emit pageChanged(MainPage::Main);
             ui->homeBtn->setIcon(QIcon(":/icon/homeSelect.png"));
         }
         else{
@@ -42,7 +44,7 @@ void UISideBar::connectSignals()
 
     connect(ui->collectBtn, &QToolButton::toggled, [this](bool checked){
         if(checked) {
-            emit pageChanged(1);
+            emit pageChanged(MainPage::Collect);
             ui->collectBtn->setIcon(QIcon(":/icon/collect.png"));
         }
         else{

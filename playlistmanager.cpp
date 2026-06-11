@@ -12,13 +12,16 @@ PlayListManager::PlayListManager(QObject *parent)
     : QObject{parent}
 {
     m_model = new QStandardItemModel(this);
+
     m_collectModel = new CollectFilterProxyModel(this);
     m_collectModel->setSourceModel(m_model);
 
+    m_searchModel = new SearchFilterProxyModel(this);
+    m_searchModel->setSourceModel(m_model);
+    m_searchModel->setFilterRole(Role::Title);
 
     // generateData();
     loadPlayList();
-    // loadCollectPlayList();
 }
 
 
@@ -107,16 +110,16 @@ int PlayListManager::setNextRow(bool isNext)
     int currentRow = this->currentRow();
     int total = this->modelRowCount();
 
-    if(Mode == PlayMode::Loop){
+    if(m_mode == PlayMode::Loop){
         if(isNext) currentRow = (currentRow + 1) % total;
         else currentRow = (currentRow - 1 + total) % total;
     }
-    else if(Mode == PlayMode::Random){
+    else if(m_mode == PlayMode::Random){
         int row = QRandomGenerator::global()->bounded(total);
         while(row == currentRow && total > 1) row = QRandomGenerator::global()->bounded(total);
         currentRow = row;
     }
-    else if(Mode == PlayMode::Single){}
+    else if(m_mode == PlayMode::Single){}
 
     this->setCurrentRow(currentRow);
 
@@ -125,8 +128,8 @@ int PlayListManager::setNextRow(bool isNext)
 
 void PlayListManager::setMode(PlayMode mode)
 {
-    Mode = mode;
-    emit modeChanged(Mode);
+    m_mode = mode;
+    emit modeChanged(m_mode);
 }
 
 void PlayListManager::setData(QAbstractItemModel *model, const QModelIndex &index, const QVariant &value, int role)
@@ -135,14 +138,24 @@ void PlayListManager::setData(QAbstractItemModel *model, const QModelIndex &inde
 
 }
 
+void PlayListManager::search(QString &text)
+{
+
+}
+
 QAbstractItemModel *PlayListManager::model()
 {
     return m_model;
 }
 
-QAbstractItemModel *PlayListManager::collectModel()
+CollectFilterProxyModel *PlayListManager::collectModel()
 {
     return m_collectModel;
+}
+
+SearchFilterProxyModel *PlayListManager::searchModel()
+{
+    return m_searchModel;
 }
 
 QStandardItem *PlayListManager::item(int row)
@@ -162,7 +175,7 @@ int PlayListManager::currentRow()
 
 PlayMode PlayListManager::mode()
 {
-    return Mode;
+    return m_mode;
 }
 
 int PlayListManager::modelRowCount()
