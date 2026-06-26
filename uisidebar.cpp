@@ -30,7 +30,7 @@ void UISideBar::init()
     ui->avatarBtn->setIcon(icon);
 }
 
-void UISideBar::connectSignals()
+void UISideBar::connectSignals() // 优化点
 {
     connect(ui->homeBtn, &QToolButton::toggled, [this](bool checked){
         if(checked) {

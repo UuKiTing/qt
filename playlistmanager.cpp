@@ -41,6 +41,7 @@ void PlayListManager::loadPlayList()
         item->setData(info.duration, Role::Duration);
         item->setData(filePath, Role::FilePath);
         item->setData(coverPath, Role::Cover);
+        item->setData(info.lyrics, Role::Lyrics);
         item->setData(durationString(info.duration), Role::DurationString);
         item->setData(false, Role::IsPlaying);
         item->setData(info.isFavo, Role::IsFavorite);
@@ -66,7 +67,8 @@ void PlayListManager::generateData()
         song.artist = obj["artist"].toString();
         song.duration = obj["duration"].toInt();
         song.filePath = "songs/" + info.fileName();
-        song.cover = "songImage/" + info.baseName() + ".jpg";
+        song.cover = "songImage/" + info.baseName() + ".png";
+        song.lyrics = "songLyrics/" + info.baseName() + ".lrc";
 
         DbManager::getInstance().appendMusicData(song);
     }

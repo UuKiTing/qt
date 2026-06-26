@@ -18,6 +18,7 @@ SOURCES += \
     dbmanager.cpp \
     global.cpp \
     main.cpp \
+    musicdetailwidget.cpp \
     musicplayer.cpp \
     playercontroller.cpp \
     playlistmanager.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     collectfilterproxymodel.h \
     dbmanager.h \
     global.h \
+    musicdetailwidget.h \
     musicplayer.h \
     playercontroller.h \
     playlistmanager.h \
@@ -46,6 +48,7 @@ HEADERS += \
     uisidebar.h
 
 FORMS += \
+    musicdetailwidget.ui \
     searchpreviewpanel.ui \
     uimain.ui \
     uisearch.ui \

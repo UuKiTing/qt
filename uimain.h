@@ -35,7 +35,7 @@ public:
     void setTotalDuration(const QString &durationString); // 设置总的播放时长
     void setProgressSliderRange(qint64 duration); // 设置进度条的范围
     void setProgressValue(qint64 position); // 设置进度值
-    void setCoverPixmap(const QString &cover); // 设置当前播放的音乐封面
+    void setCoverIcon(const QString &path); // 设置当前播放的音乐封面
     void setVolumeValue(float volume); // 设置音量大小
     void setTitleAndArtist(const QString &title, const QString &artist); // 设置音乐标题和作者
     void setCurrentIndex(const QModelIndex &index); // 设置音乐列表视图的index
@@ -46,6 +46,7 @@ public:
     QSlider* volumeSlider();
     int progressValue();
     QStackedWidget* stackedWidget();
+    QFrame* controlBar();
 
 signals:
     void songPlayRequest(const QModelIndex &index, bool autoPlay); // 播放歌曲
@@ -54,6 +55,7 @@ signals:
     void modeChangeRequested(); // 播放模式更改
     void collected(const QModelIndex &index = QModelIndex()); // 收藏音乐
     void cancelCollected(const QModelIndex &index = QModelIndex()); // 取消收藏音乐
+    void showDetailWidget(bool isVisible);
 
 public slots:
     void onModeChanged(PlayMode mode);
@@ -77,6 +79,7 @@ private slots:
 
     void on_loveBtn_clicked(bool checked);
 
+    void on_coverBtn_toggled(bool checked);
 
 private:
     Ui::UIMain *ui;

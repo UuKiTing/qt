@@ -19,6 +19,7 @@ MusicPlayer::MusicPlayer(QWidget *parent)
     m_uiMain = new UIMain(this);
     m_uiSideBar = new UISideBar(this);
     m_uiSearch = new UISearch(this);
+    m_detailWidget = new MusicDetailWidget(m_uiMain);
 
     m_uiMain->setModel(m_uiMain->listView(), m_listManager->model());
     m_uiMain->setModel(m_uiMain->collectListView(), m_listManager->collectModel());
@@ -31,17 +32,20 @@ MusicPlayer::MusicPlayer(QWidget *parent)
     mediator->setUIMain(m_uiMain);
     mediator->setUISideBar(m_uiSideBar);
     mediator->setUISearch(m_uiSearch);
+    mediator->setDetailWidget(m_detailWidget);
 
     mediator->connectSignal();
 
     loadSettings();
 }
 
+
 void MusicPlayer::initLayout()
 {
     QHBoxLayout *HBox = new QHBoxLayout(this);
     HBox->setContentsMargins(0, 0, 0, 0);
     HBox->addWidget(m_uiSideBar);
+    HBox->setSpacing(0);
 
     QVBoxLayout *VBox = new QVBoxLayout;
     VBox->setContentsMargins(0, 0, 0, 0);
@@ -50,6 +54,10 @@ void MusicPlayer::initLayout()
     VBox->addWidget(m_uiMain);
 
     HBox->addLayout(VBox);
+
+    m_detailWidget->hide();
+    m_detailWidget->setGeometry(m_uiMain->rect());
+    m_detailWidget->stackUnder(m_uiMain->controlBar());
 }
 
 
@@ -87,6 +95,8 @@ void MusicPlayer::loadSettings()
 
     m_controller->setVolume(s.value("volume", 20).toInt());
     m_listManager->setMode(static_cast<PlayMode>(s.value("playMode", 0).toInt()));
+
+    // m_detailWidget->flushDetail(m_listManager->index());
 }
 
 
@@ -95,5 +105,15 @@ void MusicPlayer::closeEvent(QCloseEvent *event)
     saveSettings();
 
     QWidget::closeEvent(event);
+}
+
+
+void MusicPlayer::resizeEvent(QResizeEvent *event)
+{
+    QWidget::resizeEvent(event);
+
+    if(m_detailWidget){
+        m_detailWidget->setGeometry(0, 0, this->width(), this->height());
+    }
 }
 

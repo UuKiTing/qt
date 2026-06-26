@@ -7,8 +7,10 @@
 #include "uisidebar.h"
 #include "uisearch.h"
 #include "appmediator.h"
+#include "musicdetailwidget.h"
 #include <QWidget>
 #include <QMoveEvent>
+#include <QResizeEvent>
 
 class MusicPlayer : public QWidget
 {
@@ -26,6 +28,7 @@ signals:
 
 protected:
     void closeEvent(QCloseEvent *event) override; // 程序窗口关闭事件
+    void resizeEvent(QResizeEvent *event) override; // 程序窗口更改
 
 private:
     AppMediator *mediator;
@@ -34,6 +37,7 @@ private:
     UIMain *m_uiMain; // 主界面
     UISideBar *m_uiSideBar; // 侧边栏
     UISearch *m_uiSearch; // 搜索栏
+    MusicDetailWidget *m_detailWidget;
 };
 
 #endif // MUSICPLAYER_H

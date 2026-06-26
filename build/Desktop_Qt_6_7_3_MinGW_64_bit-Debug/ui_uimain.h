@@ -36,9 +36,9 @@ public:
     QWidget *page_2;
     QVBoxLayout *verticalLayout_5;
     QListView *collectListView;
-    QFrame *frame;
+    QFrame *controlBar;
     QHBoxLayout *horizontalLayout_3;
-    QLabel *coverLabel;
+    QPushButton *coverBtn;
     QWidget *widget;
     QVBoxLayout *verticalLayout_3;
     QLabel *titleSinger;
@@ -80,7 +80,7 @@ public:
         verticalLayout_2 = new QVBoxLayout(UIMain);
         verticalLayout_2->setSpacing(10);
         verticalLayout_2->setObjectName("verticalLayout_2");
-        verticalLayout_2->setContentsMargins(0, 0, 0, 0);
+        verticalLayout_2->setContentsMargins(0, 0, 10, 10);
         stackedWidget = new QStackedWidget(UIMain);
         stackedWidget->setObjectName("stackedWidget");
         stackedWidget->setStyleSheet(QString::fromUtf8("border-radius: 10px;\n"
@@ -147,41 +147,40 @@ public:
 
         verticalLayout_2->addWidget(stackedWidget);
 
-        frame = new QFrame(UIMain);
-        frame->setObjectName("frame");
+        controlBar = new QFrame(UIMain);
+        controlBar->setObjectName("controlBar");
         QSizePolicy sizePolicy2(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
         sizePolicy2.setHorizontalStretch(0);
         sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(frame->sizePolicy().hasHeightForWidth());
-        frame->setSizePolicy(sizePolicy2);
-        frame->setStyleSheet(QString::fromUtf8("QFrame#frame {\n"
+        sizePolicy2.setHeightForWidth(controlBar->sizePolicy().hasHeightForWidth());
+        controlBar->setSizePolicy(sizePolicy2);
+        controlBar->setStyleSheet(QString::fromUtf8("QFrame {\n"
 "	background: white;\n"
 "	border-radius: 10px;\n"
 "}"));
-        frame->setFrameShape(QFrame::Shape::StyledPanel);
-        frame->setFrameShadow(QFrame::Shadow::Raised);
-        horizontalLayout_3 = new QHBoxLayout(frame);
+        controlBar->setFrameShape(QFrame::Shape::StyledPanel);
+        controlBar->setFrameShadow(QFrame::Shadow::Raised);
+        horizontalLayout_3 = new QHBoxLayout(controlBar);
         horizontalLayout_3->setObjectName("horizontalLayout_3");
-        horizontalLayout_3->setContentsMargins(12, 5, 12, 5);
-        coverLabel = new QLabel(frame);
-        coverLabel->setObjectName("coverLabel");
-        sizePolicy1.setHeightForWidth(coverLabel->sizePolicy().hasHeightForWidth());
-        coverLabel->setSizePolicy(sizePolicy1);
-        coverLabel->setMinimumSize(QSize(60, 60));
-        coverLabel->setMaximumSize(QSize(60, 60));
-        coverLabel->setCursor(QCursor(Qt::CursorShape::ArrowCursor));
-        coverLabel->setStyleSheet(QString::fromUtf8(""));
-        coverLabel->setPixmap(QPixmap(QString::fromUtf8(":/icon/cover.png")));
-        coverLabel->setScaledContents(true);
-        coverLabel->setAlignment(Qt::AlignmentFlag::AlignCenter);
-        coverLabel->setWordWrap(false);
+        horizontalLayout_3->setContentsMargins(12, 10, 12, 10);
+        coverBtn = new QPushButton(controlBar);
+        coverBtn->setObjectName("coverBtn");
+        coverBtn->setMinimumSize(QSize(70, 70));
+        coverBtn->setMaximumSize(QSize(70, 70));
+        coverBtn->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/icon/cover.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
+        coverBtn->setIcon(icon);
+        coverBtn->setIconSize(QSize(60, 60));
+        coverBtn->setCheckable(true);
+        coverBtn->setFlat(true);
 
-        horizontalLayout_3->addWidget(coverLabel);
+        horizontalLayout_3->addWidget(coverBtn);
 
-        widget = new QWidget(frame);
+        widget = new QWidget(controlBar);
         widget->setObjectName("widget");
-        widget->setMinimumSize(QSize(200, 60));
-        widget->setMaximumSize(QSize(200, 60));
+        widget->setMinimumSize(QSize(200, 70));
+        widget->setMaximumSize(QSize(200, 70));
         widget->setStyleSheet(QString::fromUtf8(""));
         verticalLayout_3 = new QVBoxLayout(widget);
         verticalLayout_3->setObjectName("verticalLayout_3");
@@ -201,9 +200,9 @@ public:
         loveBtn->setMaximumSize(QSize(22, 22));
         loveBtn->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
         loveBtn->setMouseTracking(false);
-        QIcon icon;
-        icon.addFile(QString::fromUtf8(":/icon/dislove.png"), QSize(), QIcon::Mode::Selected, QIcon::State::On);
-        loveBtn->setIcon(icon);
+        QIcon icon1;
+        icon1.addFile(QString::fromUtf8(":/icon/dislove.png"), QSize(), QIcon::Mode::Selected, QIcon::State::On);
+        loveBtn->setIcon(icon1);
         loveBtn->setIconSize(QSize(22, 22));
         loveBtn->setCheckable(true);
         loveBtn->setFlat(true);
@@ -213,7 +212,7 @@ public:
 
         horizontalLayout_3->addWidget(widget);
 
-        widget_3 = new QWidget(frame);
+        widget_3 = new QWidget(controlBar);
         widget_3->setObjectName("widget_3");
         sizePolicy1.setHeightForWidth(widget_3->sizePolicy().hasHeightForWidth());
         widget_3->setSizePolicy(sizePolicy1);
@@ -236,12 +235,12 @@ public:
         sizePolicy3.setVerticalStretch(0);
         sizePolicy3.setHeightForWidth(modeBtn->sizePolicy().hasHeightForWidth());
         modeBtn->setSizePolicy(sizePolicy3);
-        modeBtn->setMinimumSize(QSize(32, 32));
-        modeBtn->setMaximumSize(QSize(32, 32));
+        modeBtn->setMinimumSize(QSize(35, 35));
+        modeBtn->setMaximumSize(QSize(35, 35));
         modeBtn->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
-        QIcon icon1;
-        icon1.addFile(QString::fromUtf8(":/icon/loop.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
-        modeBtn->setIcon(icon1);
+        QIcon icon2;
+        icon2.addFile(QString::fromUtf8(":/icon/loop.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
+        modeBtn->setIcon(icon2);
         modeBtn->setIconSize(QSize(20, 20));
         modeBtn->setFlat(true);
 
@@ -258,12 +257,12 @@ public:
         sizePolicy4.setVerticalStretch(0);
         sizePolicy4.setHeightForWidth(lastBtn->sizePolicy().hasHeightForWidth());
         lastBtn->setSizePolicy(sizePolicy4);
-        lastBtn->setMinimumSize(QSize(32, 32));
-        lastBtn->setMaximumSize(QSize(32, 32));
+        lastBtn->setMinimumSize(QSize(35, 35));
+        lastBtn->setMaximumSize(QSize(35, 35));
         lastBtn->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
-        QIcon icon2;
-        icon2.addFile(QString::fromUtf8(":/icon/last.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
-        lastBtn->setIcon(icon2);
+        QIcon icon3;
+        icon3.addFile(QString::fromUtf8(":/icon/last.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
+        lastBtn->setIcon(icon3);
         lastBtn->setIconSize(QSize(20, 20));
         lastBtn->setFlat(true);
 
@@ -277,15 +276,16 @@ public:
         playBtn->setObjectName("playBtn");
         sizePolicy4.setHeightForWidth(playBtn->sizePolicy().hasHeightForWidth());
         playBtn->setSizePolicy(sizePolicy4);
-        playBtn->setMaximumSize(QSize(45, 45));
+        playBtn->setMinimumSize(QSize(50, 50));
+        playBtn->setMaximumSize(QSize(50, 50));
         playBtn->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
         playBtn->setStyleSheet(QString::fromUtf8("QPushButton{\n"
 "	min-width: 43;\n"
 "	min-height: 43;\n"
 "}"));
-        QIcon icon3;
-        icon3.addFile(QString::fromUtf8(":/icon/pause.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
-        playBtn->setIcon(icon3);
+        QIcon icon4;
+        icon4.addFile(QString::fromUtf8(":/icon/pause.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
+        playBtn->setIcon(icon4);
         playBtn->setIconSize(QSize(43, 43));
         playBtn->setFlat(true);
 
@@ -299,12 +299,12 @@ public:
         nextBtn->setObjectName("nextBtn");
         sizePolicy4.setHeightForWidth(nextBtn->sizePolicy().hasHeightForWidth());
         nextBtn->setSizePolicy(sizePolicy4);
-        nextBtn->setMinimumSize(QSize(32, 32));
-        nextBtn->setMaximumSize(QSize(32, 32));
+        nextBtn->setMinimumSize(QSize(35, 35));
+        nextBtn->setMaximumSize(QSize(35, 35));
         nextBtn->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
-        QIcon icon4;
-        icon4.addFile(QString::fromUtf8(":/icon/next.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
-        nextBtn->setIcon(icon4);
+        QIcon icon5;
+        icon5.addFile(QString::fromUtf8(":/icon/next.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
+        nextBtn->setIcon(icon5);
         nextBtn->setIconSize(QSize(20, 20));
         nextBtn->setFlat(true);
 
@@ -318,12 +318,12 @@ public:
         volumeBtn->setObjectName("volumeBtn");
         sizePolicy3.setHeightForWidth(volumeBtn->sizePolicy().hasHeightForWidth());
         volumeBtn->setSizePolicy(sizePolicy3);
-        volumeBtn->setMinimumSize(QSize(32, 32));
-        volumeBtn->setMaximumSize(QSize(32, 32));
+        volumeBtn->setMinimumSize(QSize(35, 35));
+        volumeBtn->setMaximumSize(QSize(35, 35));
         volumeBtn->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
-        QIcon icon5;
-        icon5.addFile(QString::fromUtf8(":/icon/volume.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
-        volumeBtn->setIcon(icon5);
+        QIcon icon6;
+        icon6.addFile(QString::fromUtf8(":/icon/volume.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
+        volumeBtn->setIcon(icon6);
         volumeBtn->setIconSize(QSize(25, 25));
         volumeBtn->setFlat(true);
 
@@ -407,7 +407,7 @@ public:
         horizontalLayout_3->addItem(horizontalSpacer);
 
 
-        verticalLayout_2->addWidget(frame);
+        verticalLayout_2->addWidget(controlBar);
 
 
         retranslateUi(UIMain);
@@ -421,7 +421,7 @@ public:
     void retranslateUi(QWidget *UIMain)
     {
         UIMain->setWindowTitle(QCoreApplication::translate("UIMain", "Form", nullptr));
-        coverLabel->setText(QString());
+        coverBtn->setText(QString());
         titleSinger->setText(QString());
         loveBtn->setText(QString());
         modeBtn->setText(QString());

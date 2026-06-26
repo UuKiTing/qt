@@ -13,6 +13,7 @@ struct SongInfo{
     int duration = 0; // 时长/秒
     QString filePath; // 文件路径
     QString cover; // 封面路径
+    QString lyrics; // 歌词路径
     bool isFavo; // 是否收藏
 };
 
@@ -23,6 +24,7 @@ enum Role{
     Duration,
     FilePath,
     Cover,
+    Lyrics,
     DurationString,
     IsPlaying,
     IsFavorite,

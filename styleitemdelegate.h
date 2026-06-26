@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QStyledItemDelegate>
+#include <QHash>
+#include <QPixmap>
 
 class StyleItemDelegate : public QStyledItemDelegate
 {
@@ -18,6 +20,13 @@ signals:
 
 protected:
     virtual bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
+
+private:
+    QPixmap getPixmap(const QString &path, const QSize &size, int radius) const;
+
+    mutable QHash<QString, QPixmap> m_coverCache;
+
+    static constexpr int CACHE_LIMIT = 200;
 };
 
 #endif // STYLEITEMDELEGATE_H

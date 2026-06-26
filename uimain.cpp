@@ -4,6 +4,7 @@
 #include <QPainterPath>
 #include <QWidgetAction>
 #include <QMenu>
+#include <QSortFilterProxyModel>
 
 UIMain::UIMain(QWidget *parent)
     : QWidget(parent)
@@ -76,7 +77,7 @@ void UIMain::initVolumeMenu()
 void UIMain::setPlayStyle(const QModelIndex &index)
 {
     this->setTotalDuration(durationString(index.data(Role::Duration).toInt())); // 设置最大时长
-    this->setCoverPixmap(index.data(Role::Cover).toString()); // 设置音乐封面
+    this->setCoverIcon(index.data(Role::Cover).toString());  // 设置音乐封面
     this->setTitleAndArtist(index.data(Role::Title).toString(), // 设置音乐名称和作者
                             index.data(Role::Artist).toString());
     if(index.data(Role::IsFavorite).toBool()){ // 音乐是否收藏
@@ -89,10 +90,12 @@ void UIMain::setPlayStyle(const QModelIndex &index)
     }
 }
 
+
 void UIMain::switchStackedWidget(int pageIndex)
 {
     ui->stackedWidget->setCurrentIndex(pageIndex);
 }
+
 
 void UIMain::collectStatusToggle(bool checked)
 {
@@ -101,16 +104,19 @@ void UIMain::collectStatusToggle(bool checked)
     else emit cancelCollected();
 }
 
+
 void UIMain::collectIconToggle(bool isFavo)
 {
     if(isFavo) ui->loveBtn->setIcon(QIcon(":/icon/love.png"));
     else ui->loveBtn->setIcon(QIcon(":/icon/dislove.png"));
 }
 
+
 void UIMain::setModel(QAbstractItemView *view, QAbstractItemModel *model)
 {
     view->setModel(model);
 }
+
 
 void UIMain::setPlayBtnIcon(QMediaPlayer::PlaybackState state)
 {
@@ -122,30 +128,36 @@ void UIMain::setPlayBtnIcon(QMediaPlayer::PlaybackState state)
     }
 }
 
+
 void UIMain::setCurDuration(qint64 position)
 {
     ui->curDuration->setText(durationString(position / 1000));
 }
+
 
 void UIMain::setTotalDuration(const QString &durationString)
 {
     ui->totalDuration->setText(durationString);
 }
 
+
 void UIMain::setProgressSliderRange(qint64 duration)
 {
     ui->progressSlider->setRange(0, duration);
 }
+
 
 void UIMain::setProgressValue(qint64 position)
 {
     ui->progressSlider->setValue(position);
 }
 
-void UIMain::setCoverPixmap(const QString &cover)
+
+void UIMain::setCoverIcon(const QString &path)
 {
-    ui->coverLabel->setPixmap(roundPixmap(QPixmap(cover), QSize(60, 60), 5));
+    ui->coverBtn->setIcon(roundPixmap(QPixmap(path), QSize(60, 60), 5));
 }
+
 
 void UIMain::setVolumeValue(float volume)
 {
@@ -161,6 +173,7 @@ void UIMain::setTitleAndArtist(const QString &title, const QString &artist)
     ui->titleSinger->setText(str.arg(title, artist));
 }
 
+
 void UIMain::setCurrentIndex(const QModelIndex &index)
 {
     ui->listView->setCurrentIndex(index);
@@ -172,30 +185,41 @@ QListView *UIMain::listView()
     return ui->listView;
 }
 
+
 QListView *UIMain::collectListView()
 {
     return ui->collectListView;
 }
+
 
 QSlider *UIMain::progressSlider()
 {
     return ui->progressSlider;
 }
 
+
 QSlider *UIMain::volumeSlider()
 {
     return m_volumeSlider;
 }
+
 
 int UIMain::progressValue()
 {
     return ui->progressSlider->value();
 }
 
+
 QStackedWidget *UIMain::stackedWidget()
 {
     return ui->stackedWidget;
 }
+
+QFrame *UIMain::controlBar()
+{
+    return ui->controlBar;
+}
+
 
 void UIMain::onModeChanged(PlayMode mode)
 {
@@ -209,6 +233,7 @@ void UIMain::onModeChanged(PlayMode mode)
         ui->modeBtn->setIcon(QIcon(":/icon/single.png"));
     }
 }
+
 
 void UIMain::onListViewDbClicked(const QModelIndex &index, bool autoPlay)
 {
@@ -225,8 +250,12 @@ void UIMain::on_listView_doubleClicked(const QModelIndex &index)
 
 void UIMain::on_collectListView_doubleClicked(const QModelIndex &index)
 {
-    this->onListViewDbClicked(index, true);
+
+    QSortFilterProxyModel *model = qobject_cast<QSortFilterProxyModel*>(ui->collectListView->model());
+
+    this->onListViewDbClicked(model->mapToSource(index), true);
 }
+
 
 void UIMain::on_playBtn_clicked()
 {
@@ -265,4 +294,16 @@ void UIMain::on_loveBtn_clicked(bool checked)
     this->collectStatusToggle(checked);
 }
 
+
+void UIMain::on_coverBtn_toggled(bool checked)
+{
+    if(checked){
+        emit showDetailWidget(true);
+    }
+    else{
+        emit showDetailWidget(false);
+    }
+
+
+}
 

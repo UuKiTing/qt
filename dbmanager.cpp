@@ -41,6 +41,7 @@ QList<SongInfo> DbManager::loadSongs()
         info.duration = query.value(3).toInt();
         info.filePath = query.value(4).toString();
         info.cover = query.value(5).toString();
+        info.lyrics = query.value(6).toString();
         if(query.value(count - 1).toInt()) info.isFavo = true;
         else info.isFavo = false;
 
@@ -54,13 +55,14 @@ QList<SongInfo> DbManager::loadSongs()
 void DbManager::appendMusicData(const SongInfo &info)
 {
     QSqlQuery query;
-    query.prepare("INSERT INTO songs VALUES(:id, :title, :artist, :duration, :filePath, :cover)");
+    query.prepare("INSERT INTO songs VALUES(:id, :title, :artist, :duration, :filePath, :cover, :lyrics)");
     query.bindValue(":id", info.id);
     query.bindValue(":title", info.title);
     query.bindValue(":artist", info.artist);
     query.bindValue(":duration", info.duration);
     query.bindValue(":filePath", info.filePath);
     query.bindValue(":cover", info.cover);
+    query.bindValue(":lyrics", info.lyrics);
     query.exec();
 }
 

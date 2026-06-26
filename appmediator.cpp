@@ -38,6 +38,11 @@ void AppMediator::setUISearch(UISearch *uiSearch)
     m_uiSearch = uiSearch;
 }
 
+void AppMediator::setDetailWidget(MusicDetailWidget *detailWidget)
+{
+    m_detailWidget = detailWidget;
+}
+
 void AppMediator::connectSignal()
 {
     playConnect();
@@ -45,6 +50,11 @@ void AppMediator::connectSignal()
     volumeSliderConnect();
     pageConnect();
     collectConnect();
+    searchConnect();
+
+    connect(m_uiMain, &UIMain::showDetailWidget, m_detailWidget, &MusicDetailWidget::setVisible);
+    connect(m_uiMain, &UIMain::showDetailWidget, m_uiSideBar, &UISideBar::setHidden);
+    connect(m_uiMain, &UIMain::showDetailWidget, m_uiSearch, &UISearch::setHidden);
 }
 
 void AppMediator::playConnect()
@@ -53,12 +63,11 @@ void AppMediator::playConnect()
     connect(m_controller->mediaPlayer(), &QMediaPlayer::playbackStateChanged, m_uiMain, &UIMain::setPlayBtnIcon);
 
     // 双击播放
-    connect(m_uiMain, &UIMain::songPlayRequest, m_controller, &PlayerController::onSongPlayRequested);
-    connect(m_uiMain, &UIMain::songPlayRequest, [this](const QModelIndex &index)
-            {m_listManager->setCurrentRow(index.row());});
-
-    connect(m_uiSearch->searchBar(), &QLineEdit::textChanged, m_listManager->searchModel(), &SearchFilterProxyModel::setKeyWord);
-    connect(m_uiSearch, &UISearch::songPlayRequest, m_uiMain, &UIMain::onListViewDbClicked);
+    connect(m_uiMain, &UIMain::songPlayRequest, [this](const QModelIndex &index, bool autoPlay){
+        m_controller->onSongPlayRequested(index, autoPlay);
+        m_listManager->setCurrentRow(index.row());
+        m_detailWidget->flushDetail(m_listManager->index());
+    });
 
     // 手动控制播放/停止
     connect(m_uiMain, &UIMain::playPauseRequested, m_controller, &PlayerController::onPlayPauseRequested);
@@ -100,7 +109,7 @@ void AppMediator::progressSliderConnect()
     // 设置进度条范围
     connect(m_controller->mediaPlayer(), &QMediaPlayer::durationChanged, m_uiMain, &UIMain::setProgressSliderRange);
 
-    // 当前进度时长
+    // 当前进度条时长（文本）
     connect(m_controller->mediaPlayer(), &QMediaPlayer::positionChanged, m_uiMain, &UIMain::setCurDuration);
 
     // 播放器进度同步给进度条滑块
@@ -116,6 +125,9 @@ void AppMediator::progressSliderConnect()
         m_isDragging = false;
         m_controller->setPlayProgress(m_uiMain->progressValue());
     });
+
+    connect(m_controller->mediaPlayer(), &QMediaPlayer::positionChanged,
+            m_detailWidget, &MusicDetailWidget::onAudioPositionChanged);
 }
 
 void AppMediator::volumeSliderConnect()
@@ -139,6 +151,13 @@ void AppMediator::collectConnect()
     connect(m_uiMain, &UIMain::cancelCollected, [this](const QModelIndex &index){
         collectSong(false, index);
     });
+}
+
+void AppMediator::searchConnect()
+{
+    // 搜索
+    connect(m_uiSearch->searchBar(), &QLineEdit::textChanged, m_listManager->searchModel(), &SearchFilterProxyModel::setKeyWord);
+    connect(m_uiSearch, &UISearch::songPlayRequest, m_uiMain, &UIMain::onListViewDbClicked);
 }
 
 void AppMediator::collectSong(bool isCollect, const QModelIndex &index)
@@ -171,6 +190,8 @@ void AppMediator::onSkipPlayRequested(bool isNext)
     m_uiMain->setPlayStyle(index);
 
     m_controller->onSkipPlayRequested(index);
+
+    m_detailWidget->flushDetail(index);
 }
 
 

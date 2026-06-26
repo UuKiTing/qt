@@ -6,6 +6,7 @@
 #include "uisidebar.h"
 #include "playercontroller.h"
 #include "playlistmanager.h"
+#include "musicdetailwidget.h"
 #include <QObject>
 #include <QModelIndex>
 
@@ -20,6 +21,7 @@ public:
     void setUIMain(UIMain *uiMain);
     void setUISideBar(UISideBar *uiSideBar);
     void setUISearch(UISearch *uiSearch);
+    void setDetailWidget(MusicDetailWidget *detailWidget);
 
     void connectSignal();
     void playConnect(); // 播放功能
@@ -27,6 +29,7 @@ public:
     void volumeSliderConnect(); //  音量
     void pageConnect(); // 页面切换
     void collectConnect(); // 音乐收藏
+    void searchConnect();
 
     void collectSong(bool isCollect, const QModelIndex &index = QModelIndex()); // 收藏音乐
 
@@ -41,6 +44,7 @@ private:
     UIMain *m_uiMain{}; // 主界面
     UISideBar *m_uiSideBar{}; // 侧边栏
     UISearch *m_uiSearch{}; // 搜索栏
+    MusicDetailWidget *m_detailWidget; // 全屏播放页
 
     bool m_isDragging = false;// 标志位：是否关闭播放器进度和进度条滑块的同步
 };
