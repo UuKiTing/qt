@@ -113,38 +113,33 @@ bool StyleItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
 QPixmap StyleItemDelegate::getPixmap(const QString &path, const QSize &size, int radius) const
 {
-    if(m_coverCache.contains(path)){
-        return m_coverCache.value(path);
+    if(m_coverCache.maxCost() == 0){
+        m_coverCache.setMaxCost(CACHE_LIMIT);
     }
 
-    if(m_coverCache.size() >= CACHE_LIMIT){
-        m_coverCache.clear();
-    }
+    QPixmap *cached = m_coverCache.object(path);
+    if (cached)  return *cached;
+
+
 
     QPixmap source(path);
     if (source.isNull()) {
         source = QPixmap(":/icon/cover.png");
     }
 
-    source = source.scaled(size,
-                     Qt::KeepAspectRatioByExpanding,
-                     Qt::SmoothTransformation);
+    source = source.scaled(size, Qt::KeepAspectRatioByExpanding,
+                                 Qt::SmoothTransformation);
 
     QPixmap rounded(size);
     rounded.fill(Qt::transparent);
-
     QPainter painter(&rounded);
-    painter.setRenderHint(QPainter::Antialiasing); // 开启抗锯齿
+    painter.setRenderHint(QPainter::Antialiasing);
 
-    // 圆角裁剪路径
     QPainterPath p;
     p.addRoundedRect(QRectF(0, 0, size.width(), size.height()), radius, radius);
     painter.setClipPath(p);
-
-    // 直接画缩放后的图，裁剪路径会自动切掉圆角外的部分
     painter.drawPixmap(0, 0, source);
 
-    m_coverCache.insert(path, rounded);
-
+    m_coverCache.insert(path, new QPixmap(rounded), 1);
     return rounded;
 }

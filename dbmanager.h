@@ -19,10 +19,6 @@ public:
     void appendMusicData(const SongInfo &info);
     void collectSong(const QModelIndex &index);
     void disCollectSong(const QModelIndex &index);
-
-
-signals:
-
 private:
     QSqlDatabase m_db;
 

@@ -8,6 +8,7 @@
 #include <QTextStream>
 #include <QListWidget>
 #include <QMap>
+#include <QCoreApplication>
 
 
 MusicDetailWidget::MusicDetailWidget(QWidget *parent)
@@ -41,8 +42,6 @@ MusicDetailWidget::MusicDetailWidget(QWidget *parent)
         "   font-weight: bold;"
         "}"
         );
-
-
 }
 
 
@@ -72,7 +71,7 @@ QList<LyricLine> MusicDetailWidget::parseLyricFile(const QString &filePath)
 {
     QList<LyricLine> lyricList;
 
-    QString path = QDir(QDir::currentPath()).filePath(filePath);
+    QString path = QDir(QCoreApplication::applicationDirPath()).filePath(filePath);
     QFile file(path);
 
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){

@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QStyledItemDelegate>
-#include <QHash>
+#include <QCache>
 #include <QPixmap>
 
 class StyleItemDelegate : public QStyledItemDelegate
@@ -24,7 +24,7 @@ protected:
 private:
     QPixmap getPixmap(const QString &path, const QSize &size, int radius) const;
 
-    mutable QHash<QString, QPixmap> m_coverCache;
+    mutable QCache<QString, QPixmap> m_coverCache;
 
     static constexpr int CACHE_LIMIT = 200;
 };

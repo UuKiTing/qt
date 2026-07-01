@@ -6,6 +6,7 @@
 #include <QRandomGenerator>
 #include <taglib/tag.h>
 #include <taglib/fileref.h>
+#include <QCoreApplication>
 
 
 PlayListManager::PlayListManager(QObject *parent)
@@ -27,7 +28,7 @@ PlayListManager::PlayListManager(QObject *parent)
 
 void PlayListManager::loadPlayList()
 {
-    QDir dir = QDir(QDir::currentPath());
+    QDir dir = QDir(QCoreApplication::applicationDirPath());
 
     for(SongInfo &info : DbManager::getInstance().loadSongs()){
         QStandardItem *item = new QStandardItem;
@@ -54,7 +55,7 @@ void PlayListManager::loadPlayList()
 void PlayListManager::generateData()
 {
     int id = 1;
-    QString currentPath = QDir::currentPath();
+    QString currentPath = QCoreApplication::applicationDirPath();
     QDir dir(QDir(currentPath).filePath("songs"));
 
 

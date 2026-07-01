@@ -63,7 +63,7 @@ void MusicPlayer::initLayout()
 
 void MusicPlayer::saveSettings()
 {
-    QSettings s;
+    QSettings s("Luo", "MusicPlayer");
     s.setValue("currentRow", m_listManager->currentRow());
     s.setValue("position", m_controller->position());
     s.setValue("volume", m_controller->volume());

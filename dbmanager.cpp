@@ -2,12 +2,16 @@
 #include "global.h"
 #include <QStandardPaths>
 #include <QSqlRecord>
+#include <QCoreApplication>
+#include <QDir>
 
 
 DbManager::DbManager()
 {
     m_db = QSqlDatabase::addDatabase("QSQLITE");
-    m_db.setDatabaseName("music.db");
+
+    QDir dir = QDir(QCoreApplication::applicationDirPath());
+    m_db.setDatabaseName(dir.filePath("music.db"));
 
     if(!m_db.open()){
         qWarning() << "数据库打开失败：" << m_db.lastError().text();
