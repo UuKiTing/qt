@@ -4,14 +4,13 @@
 #include <QSqlRecord>
 
 
-DbManager::DbManager(QObject *parent)
-    : QObject{parent}
+DbManager::DbManager()
 {
     m_db = QSqlDatabase::addDatabase("QSQLITE");
     m_db.setDatabaseName("music.db");
 
     if(!m_db.open()){
-        qDebug() << "数据库打开失败！";
+        qWarning() << "数据库打开失败：" << m_db.lastError().text();
     }
 }
 
@@ -25,9 +24,14 @@ DbManager &DbManager::getInstance()
 QList<SongInfo> DbManager::loadSongs()
 {
     QSqlQuery query;
-    QString sql = QString("SELECT * FROM songs LEFT JOIN (SELECT music_id FROM collection WHERE user_id = %1) as coll "
-                          "on coll.music_id = songs.id;").arg(1);
-    query.exec(sql);
+    query.prepare("SELECT * FROM songs LEFT JOIN (SELECT music_id FROM collection WHERE user_id = :user_id) as coll "
+                  "ON coll.music_id = songs.id;");
+    query.bindValue(":user_id", 1);
+
+    if(!query.exec()){
+        qDebug() << "Load songs failed:" << query.lastError().text();
+        return {};
+    }
 
     int count = query.record().count();
 
@@ -78,7 +82,10 @@ void DbManager::collectSong(const QModelIndex &index)
 void DbManager::disCollectSong(const QModelIndex &index)
 {
     QSqlQuery query;
-    query.exec(QString("DELETE FROM collection WHERE user_id = %1 AND music_id = %2").arg(1).arg(index.data(Role::Id).toInt()));
+    query.prepare("DELETE FROM collection WHERE user_id = :user_id AND music_id = :music_id");
+    query.bindValue(":user_id", 1);
+    query.bindValue(":music_id", index.data(Role::Id).toInt());
+    query.exec();
 }
 
 

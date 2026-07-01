@@ -15,7 +15,7 @@ PlayerController::PlayerController(QObject *parent)
 void PlayerController::setSource(const QModelIndex &index)
 {
     QString path = index.data(Role::FilePath).toString();
-    m_player->setSource(QUrl(path));
+    m_player->setSource(QUrl::fromLocalFile(path));
 }
 
 void PlayerController::play(bool autoPlay)

@@ -81,7 +81,7 @@ public:
         widget_4->setObjectName("widget_4");
         widget_4->setMinimumSize(QSize(320, 350));
         widget_4->setMaximumSize(QSize(448, 490));
-        widget_4->setStyleSheet(QString::fromUtf8("background-colo: yellow;"));
+        widget_4->setStyleSheet(QString::fromUtf8(""));
         verticalLayout_3 = new QVBoxLayout(widget_4);
         verticalLayout_3->setSpacing(0);
         verticalLayout_3->setObjectName("verticalLayout_3");

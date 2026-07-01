@@ -140,10 +140,6 @@ void PlayListManager::setData(QAbstractItemModel *model, const QModelIndex &inde
 
 }
 
-void PlayListManager::search(QString &text)
-{
-
-}
 
 QAbstractItemModel *PlayListManager::model()
 {

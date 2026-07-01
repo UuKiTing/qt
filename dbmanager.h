@@ -9,12 +9,9 @@
 #include <QList>
 #include <QModelIndex>
 
-class DbManager : public QObject
+class DbManager
 {
-    Q_OBJECT
 public:
-
-
     static DbManager& getInstance();
 
     QList<SongInfo> loadSongs();
@@ -29,7 +26,7 @@ signals:
 private:
     QSqlDatabase m_db;
 
-    explicit DbManager(QObject *parent = nullptr);
+    explicit DbManager();
     ~DbManager();
 
 };

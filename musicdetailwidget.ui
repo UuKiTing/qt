@@ -126,7 +126,7 @@
             </size>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-colo: yellow;</string>
+            <string notr="true"/>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
             <property name="spacing">

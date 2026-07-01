@@ -44,7 +44,7 @@ private:
     UIMain *m_uiMain{}; // 主界面
     UISideBar *m_uiSideBar{}; // 侧边栏
     UISearch *m_uiSearch{}; // 搜索栏
-    MusicDetailWidget *m_detailWidget; // 全屏播放页
+    MusicDetailWidget *m_detailWidget{}; // 全屏播放页
 
     bool m_isDragging = false;// 标志位：是否关闭播放器进度和进度条滑块的同步
 };

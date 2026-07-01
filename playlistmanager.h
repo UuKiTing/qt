@@ -30,8 +30,6 @@ public:
     void setMode(PlayMode mode);
     void setData(QAbstractItemModel *model, const QModelIndex &index, const QVariant &value, int role = Role::Invalid);
 
-    void search(QString &text);
-
 
     QAbstractItemModel* model();
     CollectFilterProxyModel* collectModel();

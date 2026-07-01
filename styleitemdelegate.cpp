@@ -15,7 +15,6 @@ void StyleItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     const bool isPlaying = index.data(Role::IsPlaying).toBool();
     const QString title = index.data(Role::Title).toString();
     const QString artist = index.data(Role::Artist).toString();
-    const int duration = index.data(Role::Duration).toInt();
     const bool isFavorite = index.data(Role::IsFavorite).toBool();;
 
     const QColor blackColor = Qt::black;
@@ -35,7 +34,6 @@ void StyleItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     // 图标
     painter->save();
-    // QIcon icon = roundPixmap(QPixmap(index.data(Role::Cover).toString()), QSize(50, 50), 5);
 
     QIcon icon = getPixmap(index.data(Role::Cover).toString(), QSize(50, 50), 5);
 
@@ -77,13 +75,15 @@ void StyleItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     favIcon.paint(painter, btnRect);
     painter->restore();
 
-    QStyledItemDelegate::paint(painter, option, index);
+    // QStyledItemDelegate::paint(painter, option, index);
 }
+
 
 QSize StyleItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     return QSize(option.rect.width(), 70);
 }
+
 
 bool StyleItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
@@ -109,6 +109,7 @@ bool StyleItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
     }
     return QStyledItemDelegate::editorEvent(event, model, option, index);
 }
+
 
 QPixmap StyleItemDelegate::getPixmap(const QString &path, const QSize &size, int radius) const
 {

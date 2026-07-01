@@ -232,6 +232,7 @@ void UIMain::onModeChanged(PlayMode mode)
     else if(mode == PlayMode::Single){
         ui->modeBtn->setIcon(QIcon(":/icon/single.png"));
     }
+
 }
 
 
