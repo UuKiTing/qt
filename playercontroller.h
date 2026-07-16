@@ -37,8 +37,6 @@ public slots:
 private:
     QMediaPlayer *m_player;
     QAudioOutput *m_audioOutput;
-
-    int currentVolume = 20;
 };
 
 

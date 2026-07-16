@@ -73,7 +73,7 @@ void MusicPlayer::saveSettings()
 
 void MusicPlayer::loadSettings()
 {
-    QSettings s;
+    QSettings s("Luo", "MusicPlayer");
     int playProgress = s.value("position", 0).toInt();
     int row = s.value("currentRow", 0).toInt();
 
@@ -115,5 +115,20 @@ void MusicPlayer::resizeEvent(QResizeEvent *event)
     if(m_detailWidget){
         m_detailWidget->setGeometry(0, 0, this->width(), this->height());
     }
+}
+
+void MusicPlayer::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Space){
+        m_controller->onPlayPauseRequested();
+    }
+    else if(event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_Left){
+        emit m_uiMain->skipPlayRequested(false);
+    }
+    else if(event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_Right){
+        emit m_uiMain->skipPlayRequested(true);
+    }
+
+    QWidget::keyPressEvent(event);
 }
 

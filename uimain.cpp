@@ -5,6 +5,7 @@
 #include <QWidgetAction>
 #include <QMenu>
 #include <QSortFilterProxyModel>
+#include <QLabel>
 
 UIMain::UIMain(QWidget *parent)
     : QWidget(parent)
@@ -242,6 +243,12 @@ void UIMain::onListViewDbClicked(const QModelIndex &index, bool autoPlay)
     emit songPlayRequest(index, autoPlay);
 }
 
+void UIMain::onSkipButtonClicked(bool isNext)
+{
+    if(ui->listView->model()->rowCount() > 0)
+        emit skipPlayRequested(isNext);
+}
+
 
 void UIMain::on_listView_doubleClicked(const QModelIndex &index)
 {
@@ -272,17 +279,14 @@ void UIMain::on_modeBtn_clicked()
 
 void UIMain::on_nextBtn_clicked()
 {
-    if(ui->listView->model()->rowCount() > 0)
-        emit skipPlayRequested(true);
+    this->onSkipButtonClicked(true);
 }
 
 
 void UIMain::on_lastBtn_clicked()
 {
-    if(ui->listView->model()->rowCount() > 0)
-        emit skipPlayRequested(false);
+    this->onSkipButtonClicked(false);
 }
-
 
 void UIMain::on_volumeBtn_clicked()
 {

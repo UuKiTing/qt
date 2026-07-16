@@ -19,7 +19,6 @@ PlayListManager::PlayListManager(QObject *parent)
 
     m_searchModel = new SearchFilterProxyModel(this);
     m_searchModel->setSourceModel(m_model);
-    m_searchModel->setFilterRole(Role::Title);
 
     // generateData();
     loadPlayList();

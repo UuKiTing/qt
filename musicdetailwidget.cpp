@@ -136,13 +136,37 @@ int MusicDetailWidget::getLyricIndexByTime(const QList<LyricLine> &lyricList, qi
 {
     if(lyricList.isEmpty()) return -1;
 
-    auto it = std::upper_bound(lyricList.begin(), lyricList.end(), position,
-                               [](qint64 time, const LyricLine &line) {
-                                   return time < line.time;
-                               });
-    int index = std::distance(lyricList.begin(), it) - 1;
+    // 万能二分查找
+    int left = 0, right = lyricList.size() - 1;
 
-    return qMax(0, index);
+    while(left < right){
+        int mid = left + (right - left + 1) / 2; // 向上取整
+
+        if(lyricList[mid].time <= position ){
+            left = mid;
+        }
+        else{
+            right = mid - 1;
+        }
+    }
+
+
+    return left;
+
+//     int left = 0, right = lyricList.size() - 1;
+//     int result = -1;
+
+//     while(left <= right) {
+//         int mid = left + (right - left) / 2;
+//         if(lyricList[mid].time <= position) {
+//             result = mid;
+//             left = mid + 1;
+//         } else {
+//             right = mid - 1;
+//         }
+//     }
+
+//     return result;
 }
 
 

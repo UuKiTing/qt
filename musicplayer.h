@@ -29,6 +29,8 @@ signals:
 protected:
     void closeEvent(QCloseEvent *event) override; // 程序窗口关闭事件
     void resizeEvent(QResizeEvent *event) override; // 程序窗口更改
+    void keyPressEvent(QKeyEvent *event) override; // 快捷键
+
 
 private:
     AppMediator *mediator;

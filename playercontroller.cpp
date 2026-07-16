@@ -1,5 +1,6 @@
 #include "playercontroller.h"
 #include "global.h"
+#include <QFile>
 
 PlayerController::PlayerController(QObject *parent)
     : QObject{parent}
@@ -9,7 +10,7 @@ PlayerController::PlayerController(QObject *parent)
 
     m_player->setAudioOutput(m_audioOutput);
 
-    setVolume(currentVolume); // 设置默认音量
+    setVolume(20);
 }
 
 void PlayerController::setSource(const QModelIndex &index)
@@ -31,7 +32,6 @@ void PlayerController::setPlayProgress(int value)
 void PlayerController::setVolume(int value)
 {
     m_audioOutput->setVolume(value / 100.0);
-    this->currentVolume = value;
 }
 
 QMediaPlayer *PlayerController::mediaPlayer()
@@ -46,7 +46,7 @@ QAudioOutput *PlayerController::audioOutput()
 
 int PlayerController::volume()
 {
-    return currentVolume;
+    return static_cast<int>(m_audioOutput->volume() * 100);
 }
 
 int PlayerController::position()
@@ -84,6 +84,12 @@ void PlayerController::onPlayPauseRequested()
 
 void PlayerController::onSkipPlayRequested(const QModelIndex &index)
 {
+    QString filePath = index.data(Role::FilePath).toString();
+    if(!QFile::exists(filePath)){
+        qWarning() << "File does not exist:" << filePath;
+        return;
+    }
+
     emit isPlayingChanged(index, true);
     this->setSource(index);
     this->play(true);

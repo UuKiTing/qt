@@ -17,14 +17,14 @@ void SearchFilterProxyModel::setKeyWord(const QString &keyword)
 bool SearchFilterProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
 {
 
-    if (m_keyword.isEmpty())
-        return false;
+    if(m_keyword.isEmpty()) return true;
 
     QAbstractItemModel *source = sourceModel();
 
-    QModelIndex index = source->index(source_row, 0);
-    QString text = index.data(Role::Title).toString();
+    QModelIndex index = source->index(source_row, 0, source_parent);
+    QString title = index.data(Role::Title).toString();
+    QString artist = index.data(Role::Artist).toString();
 
-    return text.contains(m_keyword, Qt::CaseInsensitive);
-
+    return title.contains(m_keyword, Qt::CaseInsensitive) ||
+           artist.contains(m_keyword, Qt::CaseInsensitive);
 }

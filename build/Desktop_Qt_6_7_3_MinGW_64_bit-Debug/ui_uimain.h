@@ -187,8 +187,7 @@ public:
         titleSinger = new QLabel(widget);
         titleSinger->setObjectName("titleSinger");
         titleSinger->setMinimumSize(QSize(0, 20));
-        titleSinger->setStyleSheet(QString::fromUtf8("font-size: 16px;\n"
-""));
+        titleSinger->setStyleSheet(QString::fromUtf8("font-size: 16px;"));
         titleSinger->setTextFormat(Qt::TextFormat::RichText);
 
         verticalLayout_3->addWidget(titleSinger);
@@ -276,7 +275,7 @@ public:
         playBtn->setObjectName("playBtn");
         sizePolicy4.setHeightForWidth(playBtn->sizePolicy().hasHeightForWidth());
         playBtn->setSizePolicy(sizePolicy4);
-        playBtn->setMinimumSize(QSize(50, 50));
+        playBtn->setMinimumSize(QSize(45, 45));
         playBtn->setMaximumSize(QSize(50, 50));
         playBtn->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
         playBtn->setStyleSheet(QString::fromUtf8("QPushButton{\n"

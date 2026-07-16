@@ -60,6 +60,7 @@ signals:
 public slots:
     void onModeChanged(PlayMode mode);
     void onListViewDbClicked(const QModelIndex &index, bool autoPlay);
+    void onSkipButtonClicked(bool isNext);
 
 private slots:
 

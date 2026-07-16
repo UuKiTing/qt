@@ -171,7 +171,7 @@ void AppMediator::collectSong(bool isCollect, const QModelIndex &index)
 
     m_listManager->setData(m_listManager->model(), idx, isCollect, Role::IsFavorite);
 
-    if(m_listManager->index() == index){
+    if(m_listManager->currentRow() == index.row()){
         m_uiMain->collectIconToggle(isCollect);
     }
 }
