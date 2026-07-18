@@ -18,8 +18,18 @@ UIMain::UIMain(QWidget *parent)
     ui->listView->setItemDelegate(m_delegate);
     ui->collectListView->setItemDelegate(m_delegate);
 
+
+    ui->listView->setContextMenuPolicy(Qt::CustomContextMenu);
+
     initVolumeMenu();
     connectSingal();
+
+    connect(ui->listView, &QListView::customContextMenuRequested, this, [this](const QPoint &pos){
+        QModelIndex index = ui->listView->indexAt(pos);
+        if(index.isValid()){
+            qDebug() << index.data(Role::Title).toString();
+        }
+    });
 }
 
 

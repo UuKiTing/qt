@@ -136,37 +136,20 @@ int MusicDetailWidget::getLyricIndexByTime(const QList<LyricLine> &lyricList, qi
 {
     if(lyricList.isEmpty()) return -1;
 
-    // 万能二分查找
     int left = 0, right = lyricList.size() - 1;
+    int result = -1;
 
-    while(left < right){
-        int mid = left + (right - left + 1) / 2; // 向上取整
-
-        if(lyricList[mid].time <= position ){
-            left = mid;
-        }
-        else{
+    while(left <= right) {
+        int mid = left + (right - left) / 2;
+        if(lyricList[mid].time <= position) {
+            result = mid;
+            left = mid + 1;
+        } else {
             right = mid - 1;
         }
     }
 
-
-    return left;
-
-//     int left = 0, right = lyricList.size() - 1;
-//     int result = -1;
-
-//     while(left <= right) {
-//         int mid = left + (right - left) / 2;
-//         if(lyricList[mid].time <= position) {
-//             result = mid;
-//             left = mid + 1;
-//         } else {
-//             right = mid - 1;
-//         }
-//     }
-
-//     return result;
+    return result;
 }
 
 
@@ -178,8 +161,6 @@ void MusicDetailWidget::onAudioPositionChanged(qint64 position)
         m_lastLyricIndex = currentIndex;
 
         ui->listWidget->setCurrentRow(currentIndex);
-
-        // ui->listWidget->scrollToItem(ui->listWidget->currentItem(), QAbstractItemView::PositionAtCenter);
 
         QListWidgetItem *item = ui->listWidget->item(currentIndex);
 

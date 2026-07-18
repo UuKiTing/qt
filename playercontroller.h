@@ -28,6 +28,7 @@ signals:
     void currentRowChanged(int row);
     void isPlayingChanged(const QModelIndex &index, bool isPlaying);
     void isPlayingRestored();
+    void playbackError(const QString &msg);
 
 public slots:
     void onSongPlayRequested(const QModelIndex &index,  bool autoPlay); // 播放音乐

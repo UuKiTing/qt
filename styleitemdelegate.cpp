@@ -5,10 +5,54 @@
 #include <QMouseEvent>
 #include <QSortFilterProxyModel>
 #include <QPainterPath>
+#include <QFile>
 
 StyleItemDelegate::StyleItemDelegate(QObject *parent)
     : QStyledItemDelegate{parent}
 {}
+
+QRect StyleItemDelegate::iconRectFor(const QRect &r, int iconSize)
+{
+    int margin = (r.height() - iconSize) / 2;
+    return QRect(r.left() + margin,
+                 r.top() + margin,
+                 iconSize,
+                 iconSize);
+}
+
+
+QRect StyleItemDelegate::durationRectFor(const QRect &r, int durWidth, int durMarginRight)
+{
+    return QRect(r.right() - durMarginRight - durWidth,
+                 r.top(),
+                 durWidth,
+                 r.height());
+}
+
+
+QRect StyleItemDelegate::favBtnRectFor(const QRect &r, int btnSize, int btnMarginRight)
+{
+    return QRect(r.right() - btnMarginRight - btnSize,
+                  r.center().y() - btnSize / 2,
+                  btnSize,
+                  btnSize);
+}
+
+void StyleItemDelegate::textRectsFor(QRect &titleRect, QRect &artistRect, const QRect &r,int marginLeft, int width)
+{
+    int margin = r.height() / 10;
+    int height = (r.height() - 2 * margin) / 2;
+    titleRect = QRect(marginLeft,
+                    r.top() + margin,
+                    width,
+                    height);
+
+    artistRect = QRect(marginLeft,
+                    titleRect.bottom(),
+                    width,
+                    height);
+}
+
 
 void StyleItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -23,13 +67,12 @@ void StyleItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     const int ICON_SIZE = 50;
     const int ICON_RADIUS = 5;
-    const int ICON_MARGIN = (70 - ICON_SIZE) / 2;
-    const int BUTTON_SIZE  = 20;
-    const int BUTTON_MARGIN_RIGHT = 25;
-    const int TEXT_MARGIN_LEFT = 15;
-    const int TEXT_MARGIN_TOPBOTTOM = 10;
     const int DUR_MARGIN_RIGHT = 50;
     const int DUR_WIDTH = 50;
+    const int BUTTON_SIZE  = 20;
+    const int BUTTON_MARGIN_RIGHT = 25 + DUR_WIDTH + DUR_MARGIN_RIGHT;;
+    const int TEXT_MARGIN_LEFT = 15;
+
 
     painter->save();
     if (option.state & QStyle::State_Selected) {
@@ -46,44 +89,26 @@ void StyleItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     QPixmap pix = getPixmap(index.data(Role::Cover).toString(),
                            QSize(ICON_SIZE, ICON_SIZE),
                            ICON_RADIUS);
-    QRect iconRect(option.rect.left() + ICON_MARGIN,
-                   option.rect.top() + ICON_MARGIN,
-                   ICON_SIZE,
-                   ICON_SIZE);
+    QRect iconRect = iconRectFor(option.rect, ICON_SIZE);
     QIcon icon = QIcon(pix);
     icon.paint(painter, iconRect);
 
 
-
     // 右侧保留区域：时长 + 按钮
-    QRect durRect(option.rect.right() - DUR_MARGIN_RIGHT - DUR_WIDTH,
-                  option.rect.top(),
-                  DUR_WIDTH,
-                  option.rect.height());
-
-    QRect btnRect(durRect.left() - BUTTON_MARGIN_RIGHT - BUTTON_SIZE,
-                  option.rect.center().y() - BUTTON_SIZE / 2,
-                  BUTTON_SIZE,
-                  BUTTON_SIZE);
+    QRect durRect = durationRectFor(option.rect, DUR_WIDTH, DUR_MARGIN_RIGHT);
+    QRect btnRect = favBtnRectFor(option.rect, BUTTON_SIZE, BUTTON_MARGIN_RIGHT);
 
 
     // 文本区域
     int textLeft = iconRect.right() + TEXT_MARGIN_LEFT;
-    int width = (btnRect.left() - textLeft) / 2;
-    QRect titleRect(textLeft,
-                    option.rect.top() + TEXT_MARGIN_TOPBOTTOM,
-                    width,
-                    (option.rect.height() - 2 * TEXT_MARGIN_TOPBOTTOM) / 2);
+    QRect titleRect, artistRect;
+    textRectsFor(titleRect, artistRect, option.rect, textLeft, (btnRect.left() - textLeft) / 2);
 
-    QRect artistRect(textLeft,
-                    titleRect.bottom(),
-                    width,
-                    (option.rect.height() - 2 * TEXT_MARGIN_TOPBOTTOM) / 2);
 
-    // 歌名
     const QColor &titleColor = isPlaying ? selectdColor : blackColor;
     const QColor &subColor = isPlaying ? selectdColor : greyColor;
 
+    // 绘制歌名
     painter->save();
     QFont titleFont = painter->font();
     titleFont.setPixelSize(16);
@@ -92,16 +117,14 @@ void StyleItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     painter->setPen(titleColor);
 
     QFontMetrics titleMetrics(titleFont);
-    QString elidedTitle = titleMetrics.elidedText(title,
-                                                  Qt::ElideRight,
-                                                  titleRect.width());
+    QString elidedTitle = titleMetrics.elidedText(title, Qt::ElideRight, titleRect.width());
     painter->drawText(titleRect,
                       Qt::AlignLeft | Qt::AlignVCenter,
                       elidedTitle);
     painter->restore();
 
 
-    // 歌手 + 时长
+    // 绘制歌手 + 时长
     painter->save();
     QFont subFont = painter->font();
     subFont.setPixelSize(14);
@@ -109,9 +132,7 @@ void StyleItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     painter->setPen(subColor);
 
     QFontMetrics subMetrics(subFont);
-    QString elidedArtist = subMetrics.elidedText(artist,
-                                                  Qt::ElideRight,
-                                                  artistRect.width());
+    QString elidedArtist = subMetrics.elidedText(artist, Qt::ElideRight, artistRect.width());
     painter->drawText(artistRect,
                       Qt::AlignLeft | Qt::AlignVCenter,
                       elidedArtist);
@@ -120,7 +141,8 @@ void StyleItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
                       index.data(Role::DurationString).toString());
     painter->restore();
 
-    // 收藏按钮
+
+    // 绘制收藏按钮
     painter->save();
     QIcon favIcon = isFavorite ? QIcon(":/icon/love.png") : QIcon(":/icon/dislove.png");
     favIcon.paint(painter, btnRect);
@@ -162,6 +184,8 @@ bool StyleItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
 QPixmap StyleItemDelegate::getPixmap(const QString &path, const QSize &size, int radius) const
 {
+    // qreal dpr = qApp->primaryScreen() ? qApp->primaryScreen()->devicePixelRatio() : 1.0;
+
     if(m_coverCache.maxCost() == 0){
         m_coverCache.setMaxCost(CACHE_LIMIT);
     }
@@ -169,15 +193,15 @@ QPixmap StyleItemDelegate::getPixmap(const QString &path, const QSize &size, int
     QPixmap *cached = m_coverCache.object(path);
     if (cached)  return *cached;
 
-
-
-    QPixmap source(path);
+    QPixmap source;
+    if(QFile::exists(path)){
+        source = QPixmap(path);
+    }
     if (source.isNull()) {
         source = QPixmap(":/icon/cover.png");
     }
 
-    source = source.scaled(size, Qt::KeepAspectRatioByExpanding,
-                                 Qt::SmoothTransformation);
+    source = source.scaled(size, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
 
     QPixmap rounded(size);
     rounded.fill(Qt::transparent);

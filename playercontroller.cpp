@@ -11,6 +11,12 @@ PlayerController::PlayerController(QObject *parent)
     m_player->setAudioOutput(m_audioOutput);
 
     setVolume(20);
+
+    connect(m_player, &QMediaPlayer::errorOccurred, this, [this](QMediaPlayer::Error err){
+        Q_UNUSED(err);
+        emit playbackError(m_player->errorString());
+    });
+
 }
 
 void PlayerController::setSource(const QModelIndex &index)

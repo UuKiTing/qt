@@ -5,7 +5,7 @@
 #include <QTimer>
 #include <QListView>
 #include <QLineEdit>
-
+#include <QMessageBox>
 
 AppMediator::AppMediator(QObject *parent)
     : QObject{parent}
@@ -102,6 +102,11 @@ void AppMediator::playConnect()
         m_listManager->setMode(mode);
     });
     connect(m_listManager, &PlayListManager::modeChanged, m_uiMain, &UIMain::onModeChanged);
+
+    // 播放错误提示
+    connect(m_controller, &PlayerController::playbackError, this, [this](const QString &msg){
+        QMessageBox::warning(nullptr, tr("Playback error"), msg);
+    });
 }
 
 void AppMediator::progressSliderConnect()

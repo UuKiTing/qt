@@ -11,6 +11,12 @@ class StyleItemDelegate : public QStyledItemDelegate
     Q_OBJECT
 public:
     explicit StyleItemDelegate(QObject *parent = nullptr);
+
+    static QRect iconRectFor(const QRect &r, int iconSize);
+    static QRect durationRectFor(const QRect &r, int durWidth, int durMarginRight);
+    static QRect favBtnRectFor(const QRect &r, int btnSize, int btnMarginRight);
+    static void textRectsFor(QRect &titleRect, QRect &artistRect, const QRect &r,int marginLeft, int width);
+
     virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
