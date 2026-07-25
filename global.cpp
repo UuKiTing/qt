@@ -3,7 +3,7 @@
 #include <QPainterPath>
 
 
-QString durationString(int duration)
+QString toDurationString(int duration)
 {
     QString minutes = QString("%1").arg(duration / 60, 2, 10, QChar('0'));
     QString seconds = QString("%1").arg(duration % 60, 2, 10, QChar('0'));

@@ -17,5 +17,7 @@
         <file>icon/homeSelect.png</file>
         <file>icon/search.png</file>
         <file>icon/flush.png</file>
+        <file>icon/add.png</file>
+        <file>icon/normalAdd.png</file>
     </qresource>
 </RCC>

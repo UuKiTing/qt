@@ -2,7 +2,7 @@
 #define UIMAIN_H
 
 #include "global.h"
-#include "styleitemdelegate.h"
+#include "styleitem_delegate.h"
 #include <QWidget>
 #include <QListView>
 #include <QMediaPlayer>
@@ -22,12 +22,13 @@ public:
     explicit UIMain(QWidget *parent = nullptr);
     ~UIMain();
 
-    void connectSingal();
+    void connectSignal();
     void initVolumeMenu(); // 初始化音量条
     void setPlayStyle(const QModelIndex &index); // 设置音乐播放样式
     void switchStackedWidget(int pageIndex); // 页面切换
     void collectStatusToggle(bool checked); // 收藏状态切换
     void collectIconToggle(bool isFavo); // 收藏图标切换
+    void initContextMenu();
 
     void setModel(QAbstractItemView *view, QAbstractItemModel *model); // 为视图设置模型
     void setPlayBtnIcon(QMediaPlayer::PlaybackState state); // 设置播放按钮图标
@@ -39,9 +40,12 @@ public:
     void setVolumeValue(float volume); // 设置音量大小
     void setTitleAndArtist(const QString &title, const QString &artist); // 设置音乐标题和作者
     void setCurrentIndex(const QModelIndex &index); // 设置音乐列表视图的index
+    void setPlaylistName(const QString name);
+    void setPlaylistCover(const QString path);
 
     QListView* listView();
     QListView* collectListView();
+    QListView* songListView();
     QSlider* progressSlider();
     QSlider* volumeSlider();
     int progressValue();
@@ -56,6 +60,7 @@ signals:
     void collected(const QModelIndex &index = QModelIndex()); // 收藏音乐
     void cancelCollected(const QModelIndex &index = QModelIndex()); // 取消收藏音乐
     void showDetailWidget(bool isVisible);
+    void coverChanged(const QString &path);
 
 public slots:
     void onModeChanged(PlayMode mode);
@@ -89,6 +94,9 @@ private:
 
     QMenu *m_volumeMenu{};
     QSlider *m_volumeSlider{};
+
+    QMenu *m_contextMenu{};
+
 };
 
 #endif // UIMAIN_H

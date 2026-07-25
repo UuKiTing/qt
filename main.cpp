@@ -12,6 +12,9 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("Luo");
     QCoreApplication::setApplicationName("MusicPlayer");
 
+    qRegisterMetaType<PlayListInfo>("PlayListInfo");
+
+
     MusicPlayer player;
     player.show();
 

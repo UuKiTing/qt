@@ -17,6 +17,13 @@ struct SongInfo{
     bool isFavo; // 是否收藏
 };
 
+struct PlayListInfo{
+    qlonglong id = -1;
+    QString name; // 歌单名称
+    int songCount = 0; // 歌曲数量
+    QString cover; // 封面路径
+};
+
 enum Role{
     Id = Qt::UserRole + 1,
     Title,
@@ -43,7 +50,7 @@ public:
     enum StackedWidgetIndex {
         Main = 0,
         Collect,
-        Search
+        SongList
     };
 };
 
@@ -56,7 +63,7 @@ public:
 };
 
 
-QString durationString(int duration); // 返回 "03:24" 格式
+QString toDurationString(int duration); // 返回 "03:24" 格式
 
 QPixmap roundPixmap(const QPixmap &source, const QSize &size, int radius);
 

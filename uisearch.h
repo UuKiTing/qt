@@ -1,8 +1,8 @@
 #ifndef UISEARCH_H
 #define UISEARCH_H
 
-#include "searchbardelegate.h"
-#include "searchpreviewpanel.h"
+#include "searchbar_delegate.h"
+#include "search_preview_panel.h"
 #include <QWidget>
 #include <QListView>
 

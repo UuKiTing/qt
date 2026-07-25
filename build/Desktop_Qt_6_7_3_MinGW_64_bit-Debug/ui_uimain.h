@@ -36,6 +36,14 @@ public:
     QWidget *page_2;
     QVBoxLayout *verticalLayout_5;
     QListView *collectListView;
+    QWidget *page_3;
+    QVBoxLayout *verticalLayout_6;
+    QWidget *widget_2;
+    QVBoxLayout *verticalLayout_7;
+    QHBoxLayout *horizontalLayout_4;
+    QLabel *playlistCover;
+    QLabel *playlistName;
+    QListView *songListView;
     QFrame *controlBar;
     QHBoxLayout *horizontalLayout_3;
     QPushButton *coverBtn;
@@ -144,6 +152,55 @@ public:
         verticalLayout_5->addWidget(collectListView);
 
         stackedWidget->addWidget(page_2);
+        page_3 = new QWidget();
+        page_3->setObjectName("page_3");
+        verticalLayout_6 = new QVBoxLayout(page_3);
+        verticalLayout_6->setSpacing(0);
+        verticalLayout_6->setObjectName("verticalLayout_6");
+        verticalLayout_6->setContentsMargins(0, 0, 0, 0);
+        widget_2 = new QWidget(page_3);
+        widget_2->setObjectName("widget_2");
+        widget_2->setStyleSheet(QString::fromUtf8(""));
+        verticalLayout_7 = new QVBoxLayout(widget_2);
+        verticalLayout_7->setSpacing(0);
+        verticalLayout_7->setObjectName("verticalLayout_7");
+        verticalLayout_7->setContentsMargins(0, 0, 0, 0);
+        horizontalLayout_4 = new QHBoxLayout();
+        horizontalLayout_4->setSpacing(30);
+        horizontalLayout_4->setObjectName("horizontalLayout_4");
+        playlistCover = new QLabel(widget_2);
+        playlistCover->setObjectName("playlistCover");
+        playlistCover->setMinimumSize(QSize(50, 50));
+        playlistCover->setMaximumSize(QSize(100, 100));
+        playlistCover->setPixmap(QPixmap(QString::fromUtf8(":/icon/cover.png")));
+        playlistCover->setScaledContents(true);
+
+        horizontalLayout_4->addWidget(playlistCover);
+
+        playlistName = new QLabel(widget_2);
+        playlistName->setObjectName("playlistName");
+        QFont font;
+        font.setPointSize(12);
+        font.setBold(true);
+        font.setItalic(false);
+        playlistName->setFont(font);
+
+        horizontalLayout_4->addWidget(playlistName);
+
+
+        verticalLayout_7->addLayout(horizontalLayout_4);
+
+        songListView = new QListView(widget_2);
+        songListView->setObjectName("songListView");
+        songListView->setStyleSheet(QString::fromUtf8("background-color: rgb(255, 255, 255);"));
+        songListView->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
+
+        verticalLayout_7->addWidget(songListView);
+
+
+        verticalLayout_6->addWidget(widget_2);
+
+        stackedWidget->addWidget(page_3);
 
         verticalLayout_2->addWidget(stackedWidget);
 
@@ -420,6 +477,8 @@ public:
     void retranslateUi(QWidget *UIMain)
     {
         UIMain->setWindowTitle(QCoreApplication::translate("UIMain", "Form", nullptr));
+        playlistCover->setText(QString());
+        playlistName->setText(QCoreApplication::translate("UIMain", "\346\226\260\345\273\272\346\255\214\345\215\2251", nullptr));
         coverBtn->setText(QString());
         titleSinger->setText(QString());
         loveBtn->setText(QString());

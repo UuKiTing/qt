@@ -38,10 +38,12 @@ void AppMediator::setUISearch(UISearch *uiSearch)
     m_uiSearch = uiSearch;
 }
 
+
 void AppMediator::setDetailWidget(MusicDetailWidget *detailWidget)
 {
     m_detailWidget = detailWidget;
 }
+
 
 void AppMediator::connectSignal()
 {
@@ -51,11 +53,13 @@ void AppMediator::connectSignal()
     pageConnect();
     collectConnect();
     searchConnect();
+    playlistConnect();
 
     connect(m_uiMain, &UIMain::showDetailWidget, m_detailWidget, &MusicDetailWidget::setVisible);
     connect(m_uiMain, &UIMain::showDetailWidget, m_uiSideBar, &UISideBar::setHidden);
     connect(m_uiMain, &UIMain::showDetailWidget, m_uiSearch, &UISearch::setHidden);
 }
+
 
 void AppMediator::playConnect()
 {
@@ -109,6 +113,7 @@ void AppMediator::playConnect()
     });
 }
 
+
 void AppMediator::progressSliderConnect()
 {
     // 设置进度条范围
@@ -134,6 +139,7 @@ void AppMediator::progressSliderConnect()
     connect(m_controller->mediaPlayer(), &QMediaPlayer::positionChanged,
             m_detailWidget, &MusicDetailWidget::onAudioPositionChanged);
 }
+
 
 void AppMediator::volumeSliderConnect()
 {
@@ -165,6 +171,16 @@ void AppMediator::searchConnect()
     connect(m_uiSearch, &UISearch::songPlayRequest, m_uiMain, &UIMain::onListViewDbClicked);
 }
 
+void AppMediator::playlistConnect()
+{
+    connect(m_uiSideBar, &UISideBar::playlistClicked, m_uiMain, [this](const PlayListInfo &info){
+        m_uiMain->setPlaylistName(info.name);
+        m_uiMain->setPlaylistCover(info.cover);
+    });
+
+    connect(m_uiSideBar, &UISideBar::playlistUpdated, m_listManager->songlistModel(), &SongListProxyModel::setAllowedSongIds);
+}
+
 void AppMediator::collectSong(bool isCollect, const QModelIndex &index)
 {
     QModelIndex idx;
@@ -176,7 +192,7 @@ void AppMediator::collectSong(bool isCollect, const QModelIndex &index)
 
     m_listManager->setData(m_listManager->model(), idx, isCollect, Role::IsFavorite);
 
-    if(m_listManager->currentRow() == index.row()){
+    if(m_listManager->currentRow() == idx.row()){
         m_uiMain->collectIconToggle(isCollect);
     }
 }

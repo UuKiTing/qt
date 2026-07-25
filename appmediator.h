@@ -4,9 +4,9 @@
 #include "uimain.h"
 #include "uisearch.h"
 #include "uisidebar.h"
-#include "playercontroller.h"
-#include "playlistmanager.h"
-#include "musicdetailwidget.h"
+#include "player_controller.h"
+#include "play_list_manager.h"
+#include "music_detail_widget.h"
 #include <QObject>
 #include <QModelIndex>
 
@@ -30,6 +30,7 @@ public:
     void pageConnect(); // 页面切换
     void collectConnect(); // 音乐收藏
     void searchConnect();
+    void playlistConnect(); // 歌单
 
     void collectSong(bool isCollect, const QModelIndex &index = QModelIndex()); // 收藏音乐
 

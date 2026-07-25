@@ -1,13 +1,13 @@
 #ifndef MUSICPLAYER_H
 #define MUSICPLAYER_H
 
-#include "playercontroller.h"
-#include "playlistmanager.h"
+#include "player_controller.h"
+#include "play_list_manager.h"
 #include "uimain.h"
 #include "uisidebar.h"
 #include "uisearch.h"
 #include "appmediator.h"
-#include "musicdetailwidget.h"
+#include "music_detail_widget.h"
 #include <QWidget>
 #include <QMoveEvent>
 #include <QResizeEvent>
@@ -33,7 +33,7 @@ protected:
 
 
 private:
-    AppMediator *mediator;
+    AppMediator *m_mediator;
     PlayerController *m_controller; // 播放控制器
     PlayListManager *m_listManager; // 音乐列表管理器
     UIMain *m_uiMain; // 主界面

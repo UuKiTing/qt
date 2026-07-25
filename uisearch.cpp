@@ -14,10 +14,10 @@ UISearch::UISearch(QWidget *parent)
 
     ui->searchBar->installEventFilter(this);
 
-    m_delegate = new SearchBarDelegate(this);
 
     m_previewPanel = new SearchPreviewPanel(this);
     m_previewPanel->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+
 
     connectSignal();
 
@@ -33,7 +33,10 @@ void UISearch::connectSignal()
 {
     connect(m_previewPanel->searchListView(), &QListView::doubleClicked, [this](const QModelIndex &index){
         QTimer::singleShot(100, this, &UISearch::hidePreviewPanel);
-        emit songPlayRequest(index, true);
+
+        QSortFilterProxyModel *model = qobject_cast<QSortFilterProxyModel*>(m_previewPanel->searchListView()->model());
+
+        emit songPlayRequest(model->mapToSource(index), true);
     });
 
     connect(ui->searchBar, &QLineEdit::textChanged, [this](QString text){

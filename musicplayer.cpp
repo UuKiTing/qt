@@ -2,16 +2,13 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QSettings>
-#include <QTimer>
-#include <QListView>
-#include <QLineEdit>
 
 MusicPlayer::MusicPlayer(QWidget *parent)
     : QWidget{parent}
 {
     this->setWindowIcon(QIcon(":/icon/icon.png"));
 
-    mediator = new AppMediator(this);
+    m_mediator = new AppMediator(this);
 
     m_controller = new PlayerController(this);
     m_listManager = new PlayListManager(this);
@@ -23,18 +20,19 @@ MusicPlayer::MusicPlayer(QWidget *parent)
 
     m_uiMain->setModel(m_uiMain->listView(), m_listManager->model());
     m_uiMain->setModel(m_uiMain->collectListView(), m_listManager->collectModel());
+    m_uiMain->setModel(m_uiMain->songListView(), m_listManager->songlistModel());
     m_uiSearch->setModel(m_uiSearch->searchListView(), m_listManager->searchModel());
 
     initLayout();
 
-    mediator->setPlayer(m_controller);
-    mediator->setListManager(m_listManager);
-    mediator->setUIMain(m_uiMain);
-    mediator->setUISideBar(m_uiSideBar);
-    mediator->setUISearch(m_uiSearch);
-    mediator->setDetailWidget(m_detailWidget);
+    m_mediator->setPlayer(m_controller);
+    m_mediator->setListManager(m_listManager);
+    m_mediator->setUIMain(m_uiMain);
+    m_mediator->setUISideBar(m_uiSideBar);
+    m_mediator->setUISearch(m_uiSearch);
+    m_mediator->setDetailWidget(m_detailWidget);
 
-    mediator->connectSignal();
+    m_mediator->connectSignal();
 
     loadSettings();
 }
@@ -74,8 +72,10 @@ void MusicPlayer::saveSettings()
 void MusicPlayer::loadSettings()
 {
     QSettings s("Luo", "MusicPlayer");
+
     int playProgress = s.value("position", 0).toInt();
     int row = s.value("currentRow", 0).toInt();
+    int volume = s.value("volume", 20).toInt();
 
     m_listManager->setCurrentRow(row);
 
@@ -93,10 +93,8 @@ void MusicPlayer::loadSettings()
         }
     }, Qt::SingleShotConnection);
 
-    m_controller->setVolume(s.value("volume", 20).toInt());
+    m_controller->setVolume(volume);
     m_listManager->setMode(static_cast<PlayMode>(s.value("playMode", 0).toInt()));
-
-    // m_detailWidget->flushDetail(m_listManager->index());
 }
 
 

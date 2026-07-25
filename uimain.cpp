@@ -1,11 +1,13 @@
 #include "uimain.h"
 #include "ui_uimain.h"
+#include "dbmanager.h"
 #include <QPainter>
 #include <QPainterPath>
 #include <QWidgetAction>
 #include <QMenu>
 #include <QSortFilterProxyModel>
 #include <QLabel>
+
 
 UIMain::UIMain(QWidget *parent)
     : QWidget(parent)
@@ -17,19 +19,14 @@ UIMain::UIMain(QWidget *parent)
     m_delegate = new StyleItemDelegate(this);
     ui->listView->setItemDelegate(m_delegate);
     ui->collectListView->setItemDelegate(m_delegate);
-
+    ui->songListView->setItemDelegate(m_delegate);
 
     ui->listView->setContextMenuPolicy(Qt::CustomContextMenu);
 
+    initContextMenu();
     initVolumeMenu();
-    connectSingal();
 
-    connect(ui->listView, &QListView::customContextMenuRequested, this, [this](const QPoint &pos){
-        QModelIndex index = ui->listView->indexAt(pos);
-        if(index.isValid()){
-            qDebug() << index.data(Role::Title).toString();
-        }
-    });
+    connectSignal();
 }
 
 
@@ -39,10 +36,29 @@ UIMain::~UIMain()
 }
 
 
-void UIMain::connectSingal()
+void UIMain::connectSignal()
 {
     connect(m_delegate, &StyleItemDelegate::collected, this, &UIMain::collected);
     connect(m_delegate, &StyleItemDelegate::cancelCollected, this, &UIMain::cancelCollected);
+    connect(ui->listView, &QListView::customContextMenuRequested, this, [this](const QPoint &pos){
+        QModelIndex index = ui->listView->indexAt(pos);
+        if(index.isValid()){
+            m_contextMenu->setProperty("song_id", index.data(Role::Id));
+            m_contextMenu->setProperty("cover", index.data(Role::Cover));
+            m_contextMenu->exec(ui->listView->viewport()->mapToGlobal(pos));
+        }
+    });
+
+    // 添加歌曲到播放列表
+    connect(m_contextMenu, &QMenu::triggered, this, [=](QAction *action){
+        int playlist_id = action->data().toInt();
+        int song_id = m_contextMenu->property("song_id").toInt();
+        DbManager::getInstance().addSongToPlaylist(playlist_id, song_id);
+
+        // QString cover = m_contextMenu->property("cover").toString();
+        // DbManager::getInstance().updatePlaylistCover(cover, playlist_id);
+
+    });
 }
 
 
@@ -87,7 +103,7 @@ void UIMain::initVolumeMenu()
 
 void UIMain::setPlayStyle(const QModelIndex &index)
 {
-    this->setTotalDuration(durationString(index.data(Role::Duration).toInt())); // 设置最大时长
+    this->setTotalDuration(toDurationString(index.data(Role::Duration).toInt())); // 设置最大时长
     this->setCoverIcon(index.data(Role::Cover).toString());  // 设置音乐封面
     this->setTitleAndArtist(index.data(Role::Title).toString(), // 设置音乐名称和作者
                             index.data(Role::Artist).toString());
@@ -118,8 +134,42 @@ void UIMain::collectStatusToggle(bool checked)
 
 void UIMain::collectIconToggle(bool isFavo)
 {
-    if(isFavo) ui->loveBtn->setIcon(QIcon(":/icon/love.png"));
-    else ui->loveBtn->setIcon(QIcon(":/icon/dislove.png"));
+    if(isFavo) {
+        ui->loveBtn->setChecked(true);
+        ui->loveBtn->setIcon(QIcon(":/icon/love.png"));
+    }
+    else{
+        ui->loveBtn->setChecked(false);
+        ui->loveBtn->setIcon(QIcon(":/icon/dislove.png"));
+    }
+}
+
+void UIMain::initContextMenu()
+{
+    m_contextMenu = new QMenu(this);
+
+    QAction *play = new QAction(QIcon(":/icon/rightClickMenu/play.png"), "播放");
+    QAction *nextPlay = new QAction(QIcon(":/icon/rightClickMenu/next.png"), "下一首播放");
+    QAction *love = new QAction("我喜欢");
+
+    m_contextMenu->addAction(play);
+    m_contextMenu->addAction(nextPlay);
+    m_contextMenu->addAction(love);
+
+    QMenu *addTo = new QMenu("添加到");
+    QMenu *moveTo = new QMenu("移动到");
+
+    QList<PlayListInfo> list = DbManager::getInstance().queryPlayLists(1);
+    for(auto &info : list){
+        QAction *action = new QAction(info.name);
+        addTo->addAction(action);
+        action->setData(info.id);
+    }
+
+    addTo->setIcon(QIcon(":/icon/rightClickMenu/add.png"));
+
+    m_contextMenu->addMenu(addTo);
+    m_contextMenu->addMenu(moveTo);
 }
 
 
@@ -142,7 +192,7 @@ void UIMain::setPlayBtnIcon(QMediaPlayer::PlaybackState state)
 
 void UIMain::setCurDuration(qint64 position)
 {
-    ui->curDuration->setText(durationString(position / 1000));
+    ui->curDuration->setText(toDurationString(position / 1000));
 }
 
 
@@ -190,6 +240,16 @@ void UIMain::setCurrentIndex(const QModelIndex &index)
     ui->listView->setCurrentIndex(index);
 }
 
+void UIMain::setPlaylistName(const QString name)
+{
+    ui->playlistName->setText(name);
+}
+
+void UIMain::setPlaylistCover(const QString path)
+{
+    ui->playlistCover->setPixmap(QPixmap(path));
+}
+
 
 QListView *UIMain::listView()
 {
@@ -200,6 +260,11 @@ QListView *UIMain::listView()
 QListView *UIMain::collectListView()
 {
     return ui->collectListView;
+}
+
+QListView *UIMain::songListView()
+{
+    return ui->songListView;
 }
 
 
