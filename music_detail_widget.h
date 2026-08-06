@@ -20,22 +20,20 @@ class MusicDetailWidget : public QWidget
 {
     Q_OBJECT
 
-
-
 public:
     explicit MusicDetailWidget(QWidget *parent = nullptr);
     ~MusicDetailWidget();
 
-    void flushDetail(const QModelIndex &index);
+    void flushDetail(const QModelIndex &index); // 刷新歌曲详情
 
-    QList<LyricLine> parseLyricFile(const QString &filePath);
+    QList<LyricLine> parseLyricFile(const QString &filePath); // 解析歌词文件
 
-    void showLyrics(const QList<LyricLine> &lyricList);
+    void showLyrics(const QList<LyricLine> &lyricList); // 显示歌词
 
-    int getLyricIndexByTime(const QList<LyricLine> &lyricList, qint64 position);
+    int getLyricIndexByTime(const QList<LyricLine> &lyricList, qint64 position); // 根据播放时间获取歌词索引
 
 public slots:
-    void onAudioPositionChanged(qint64 position);
+    void onAudioPositionChanged(qint64 position); // 根据播放时间更新歌词显示
 
 private:
     Ui::MusicDetailWidget *ui;
@@ -44,9 +42,7 @@ private:
 
     int m_lastLyricIndex = -1;
 
-
     QPropertyAnimation *m_scrollAnimation = nullptr;
-
 };
 
 #endif // MUSIC_DETAIL_WIDGET_H

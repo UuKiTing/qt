@@ -33,13 +33,13 @@ protected:
 
 
 private:
-    AppMediator *m_mediator;
+    AppMediator *m_mediator; // 应用中介者
     PlayerController *m_controller; // 播放控制器
     PlayListManager *m_listManager; // 音乐列表管理器
     UIMain *m_uiMain; // 主界面
     UISideBar *m_uiSideBar; // 侧边栏
     UISearch *m_uiSearch; // 搜索栏
-    MusicDetailWidget *m_detailWidget;
+    MusicDetailWidget *m_detailWidget; // 音乐详情页
 };
 
 #endif // MUSICPLAYER_H

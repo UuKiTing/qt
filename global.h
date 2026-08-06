@@ -63,7 +63,7 @@ public:
 };
 
 
-QString toDurationString(int duration); // 返回 "03:24" 格式
+QString toDurationString(int duration); // 返回歌曲时长的HH:mm格式
 
 QPixmap roundPixmap(const QPixmap &source, const QSize &size, int radius);
 

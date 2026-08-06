@@ -21,12 +21,13 @@ UIMain::UIMain(QWidget *parent)
     ui->collectListView->setItemDelegate(m_delegate);
     ui->songListView->setItemDelegate(m_delegate);
 
+    // 设置列表视图的右键菜单策略
     ui->listView->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    initContextMenu();
-    initVolumeMenu();
+    initContextMenu(); // 初始化右键菜单
+    initVolumeMenu(); // 初始化音量菜单
 
-    connectSignal();
+    connectSignal(); // 连接信号槽
 }
 
 
@@ -38,16 +39,20 @@ UIMain::~UIMain()
 
 void UIMain::connectSignal()
 {
+    // 连接委托的收藏信号到UIMain的收藏槽函数
     connect(m_delegate, &StyleItemDelegate::collected, this, &UIMain::collected);
     connect(m_delegate, &StyleItemDelegate::cancelCollected, this, &UIMain::cancelCollected);
+
+    // 显示主页歌曲列表的右键菜单
     connect(ui->listView, &QListView::customContextMenuRequested, this, [this](const QPoint &pos){
-        QModelIndex index = ui->listView->indexAt(pos);
+        QModelIndex index = ui->listView->indexAt(pos); // 获取右键的歌曲列表index
         if(index.isValid()){
-            m_contextMenu->setProperty("song_id", index.data(Role::Id));
-            m_contextMenu->setProperty("cover", index.data(Role::Cover));
-            m_contextMenu->exec(ui->listView->viewport()->mapToGlobal(pos));
+            m_contextMenu->setProperty("song_id", index.data(Role::Id)); // 为右键菜单栏设置当前右键的歌曲id属性
+            m_contextMenu->setProperty("cover", index.data(Role::Cover)); // 为右键菜单栏设置当前右键的歌曲封面属性
+            m_contextMenu->exec(ui->listView->viewport()->mapToGlobal(pos)); // 显示右键菜单
         }
     });
+
 
     // 添加歌曲到播放列表
     connect(m_contextMenu, &QMenu::triggered, this, [=](QAction *action){
@@ -57,7 +62,6 @@ void UIMain::connectSignal()
 
         // QString cover = m_contextMenu->property("cover").toString();
         // DbManager::getInstance().updatePlaylistCover(cover, playlist_id);
-
     });
 }
 
@@ -107,7 +111,8 @@ void UIMain::setPlayStyle(const QModelIndex &index)
     this->setCoverIcon(index.data(Role::Cover).toString());  // 设置音乐封面
     this->setTitleAndArtist(index.data(Role::Title).toString(), // 设置音乐名称和作者
                             index.data(Role::Artist).toString());
-    if(index.data(Role::IsFavorite).toBool()){ // 音乐是否收藏
+
+    if(index.data(Role::IsFavorite).toBool()){ // 设置收藏状态
         ui->loveBtn->setIcon(QIcon(":/icon/love.png"));
         ui->loveBtn->setChecked(true);
     }
@@ -120,15 +125,15 @@ void UIMain::setPlayStyle(const QModelIndex &index)
 
 void UIMain::switchStackedWidget(int pageIndex)
 {
-    ui->stackedWidget->setCurrentIndex(pageIndex);
+    ui->stackedWidget->setCurrentIndex(pageIndex); // 切换堆叠窗口的页面
 }
 
 
 void UIMain::collectStatusToggle(bool checked)
 {
-    collectIconToggle(checked);
-    if(checked) emit collected();
-    else emit cancelCollected();
+    collectIconToggle(checked); // 收藏图标切换
+    if(checked) emit collected(); // 发射收藏信号
+    else emit cancelCollected(); // 发射取消收藏信号
 }
 
 
@@ -162,8 +167,9 @@ void UIMain::initContextMenu()
     QList<PlayListInfo> list = DbManager::getInstance().queryPlayLists(1);
     for(auto &info : list){
         QAction *action = new QAction(info.name);
+        action->setIcon(QIcon(info.cover)); // 设置右键菜单中歌单选项的图标
+        action->setData(info.id); // 设置右键菜单中歌单选项的id
         addTo->addAction(action);
-        action->setData(info.id);
     }
 
     addTo->setIcon(QIcon(":/icon/rightClickMenu/add.png"));
@@ -314,8 +320,8 @@ void UIMain::onModeChanged(PlayMode mode)
 
 void UIMain::onListViewDbClicked(const QModelIndex &index, bool autoPlay)
 {
-    this->setPlayStyle(index);
-    emit songPlayRequest(index, autoPlay);
+    this->setPlayStyle(index); // 设置播放样式
+    emit songPlayRequest(index, autoPlay); // 发射播放请求信号
 }
 
 void UIMain::onSkipButtonClicked(bool isNext)
@@ -383,7 +389,5 @@ void UIMain::on_coverBtn_toggled(bool checked)
     else{
         emit showDetailWidget(false);
     }
-
-
 }
 

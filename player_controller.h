@@ -12,23 +12,23 @@ class PlayerController : public QObject
 public:
     explicit PlayerController(QObject *parent = nullptr);
 
-    void setSource(const QModelIndex &index);
-    void play(bool autoPlay);
+    void setSource(const QModelIndex &index); // 设置播放源
+    void play(bool autoPlay); // 播放音乐
 
-    void setPlayProgress(int value);
-    void setVolume(int value);
+    void setPlayProgress(int value); // 设置播放进度
+    void setVolume(int value); // 设置音量
 
-    QMediaPlayer* mediaPlayer();
-    QAudioOutput* audioOutput();
-    int volume();
-    int position();
+    QMediaPlayer* mediaPlayer(); // 返回播放器对象
+    QAudioOutput* audioOutput(); //  返回音频输出对象
+    int volume(); // 返回音量
+    int position(); // 返回当前播放位置
 
 signals:
-    void playbackStarted(bool isNext);
-    void currentRowChanged(int row);
-    void isPlayingChanged(const QModelIndex &index, bool isPlaying);
-    void isPlayingRestored();
-    void playbackError(const QString &msg);
+    void playbackStarted(bool isNext); // 播放开始信号
+    void currentRowChanged(int row); // 当前行号改变信号
+    void isPlayingChanged(const QModelIndex &index, bool isPlaying); // 播放状态改变信号
+    void isPlayingRestored(); // 恢复播放状态信号
+    void playbackError(const QString &msg); // 播放错误信号
 
 public slots:
     void onSongPlayRequested(const QModelIndex &index,  bool autoPlay); // 播放音乐

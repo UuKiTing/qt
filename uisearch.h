@@ -19,24 +19,24 @@ public:
     ~UISearch();
 
 
-    void connectSignal();
+    void connectSignal(); // 连接信号和槽
 
-    QString searchText();
-    QAbstractItemView* searchListView();
-    void showPreviewPanel();
-    void hidePreviewPanel();
+    QString searchText(); // 获取搜索栏的文本
+    QAbstractItemView* searchListView(); // 获取搜索列表视图
+    void showPreviewPanel(); // 显示搜索预览面板
+    void hidePreviewPanel(); // 隐藏搜索预览面板
 
-    void setModel(QAbstractItemView *view, QAbstractItemModel *model);
+    void setModel(QAbstractItemView *view, QAbstractItemModel *model); // 设置模型
 
-    QLineEdit* searchBar();
+    QLineEdit* searchBar(); // 获取搜索栏
 
 signals:
-    void songPlayRequest(const QModelIndex &index, bool autoPlay);
+    void songPlayRequest(const QModelIndex &index, bool autoPlay); // 播放歌曲请求信号
 
 private slots:
-    void on_searchBtn_clicked();
+    void on_searchBtn_clicked(); // 搜索按钮点击槽函数
 
-    void on_searchBar_returnPressed();
+    void on_searchBar_returnPressed(); // 搜索栏回车按下槽函数
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
@@ -46,7 +46,7 @@ private:
 
     SearchPreviewPanel *m_previewPanel;
 
-    SearchBarDelegate *m_delegate{};
+    SearchBarDelegate *m_delegate{}; // 自定义搜索代理
 };
 
 #endif // UISEARCH_H

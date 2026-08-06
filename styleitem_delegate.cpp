@@ -176,8 +176,6 @@ bool StyleItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
 QPixmap StyleItemDelegate::getPixmap(const QString &path, const QSize &size, int radius) const
 {
-    // qreal dpr = qApp->primaryScreen() ? qApp->primaryScreen()->devicePixelRatio() : 1.0;
-
     if(m_coverCache.maxCost() == 0){
         m_coverCache.setMaxCost(CACHE_LIMIT);
     }

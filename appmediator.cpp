@@ -60,7 +60,6 @@ void AppMediator::connectSignal()
     connect(m_uiMain, &UIMain::showDetailWidget, m_uiSearch, &UISearch::setHidden);
 }
 
-
 void AppMediator::playConnect()
 {
     // 设置播放按钮Icon
@@ -136,6 +135,7 @@ void AppMediator::progressSliderConnect()
         m_controller->setPlayProgress(m_uiMain->progressValue());
     });
 
+    //播放进度同步到歌词
     connect(m_controller->mediaPlayer(), &QMediaPlayer::positionChanged,
             m_detailWidget, &MusicDetailWidget::onAudioPositionChanged);
 }
@@ -143,6 +143,7 @@ void AppMediator::progressSliderConnect()
 
 void AppMediator::volumeSliderConnect()
 {
+    // 进度条和播放器音量同步
     connect(m_uiMain->volumeSlider(), &QSlider::valueChanged, m_controller, &PlayerController::setVolume);
     connect(m_controller->audioOutput(), &QAudioOutput::volumeChanged, m_uiMain, &UIMain::setVolumeValue);
 }
@@ -150,7 +151,6 @@ void AppMediator::volumeSliderConnect()
 void AppMediator::pageConnect()
 {
     connect(m_uiSideBar, &UISideBar::pageChanged, m_uiMain, &UIMain::switchStackedWidget);
-
 }
 
 void AppMediator::collectConnect()
@@ -166,18 +166,19 @@ void AppMediator::collectConnect()
 
 void AppMediator::searchConnect()
 {
-    // 搜索
     connect(m_uiSearch->searchBar(), &QLineEdit::textChanged, m_listManager->searchModel(), &SearchFilterProxyModel::setKeyWord);
     connect(m_uiSearch, &UISearch::songPlayRequest, m_uiMain, &UIMain::onListViewDbClicked);
 }
 
 void AppMediator::playlistConnect()
 {
+    // 侧边栏歌单点击，更新主界面歌单信息
     connect(m_uiSideBar, &UISideBar::playlistClicked, m_uiMain, [this](const PlayListInfo &info){
         m_uiMain->setPlaylistName(info.name);
         m_uiMain->setPlaylistCover(info.cover);
     });
 
+    // 侧边栏歌单点击，更新主界面歌单歌曲列表
     connect(m_uiSideBar, &UISideBar::playlistUpdated, m_listManager->songlistModel(), &SongListProxyModel::setAllowedSongIds);
 }
 
@@ -199,9 +200,9 @@ void AppMediator::collectSong(bool isCollect, const QModelIndex &index)
 
 void AppMediator::onSkipPlayRequested(bool isNext)
 {
-    emit m_controller->isPlayingRestored();
+    emit m_controller->isPlayingRestored(); // 解除当前播放歌曲的当前正在播放标识
 
-    int currentRow = m_listManager->setNextRow(isNext);
+    int currentRow = m_listManager->setNextRow(isNext); // 设置下一首歌曲的行号
     if(currentRow < 0 || currentRow >= m_listManager->modelRowCount()){
         return;
     }
@@ -212,7 +213,7 @@ void AppMediator::onSkipPlayRequested(bool isNext)
 
     m_controller->onSkipPlayRequested(index);
 
-    m_detailWidget->flushDetail(index);
+    m_detailWidget->flushDetail(index); // 刷新全屏播放页
 }
 
 

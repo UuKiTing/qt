@@ -19,6 +19,7 @@ PlayerController::PlayerController(QObject *parent)
 
 }
 
+
 void PlayerController::setSource(const QModelIndex &index)
 {
     QString path = index.data(Role::FilePath).toString();
@@ -62,11 +63,11 @@ int PlayerController::position()
 
 void PlayerController::onSongPlayRequested(const QModelIndex &index, bool autoPlay)
 {
-    emit isPlayingRestored();
-    emit currentRowChanged(index.row());
-    emit isPlayingChanged(index, true);
-    this->setSource(index);
-    this->play(autoPlay);
+    emit isPlayingRestored(); // 恢复歌曲的正在播放标识
+    emit currentRowChanged(index.row()); // 更新为当前歌曲的行号
+    emit isPlayingChanged(index, true); // 设置当前歌曲的正在播放标识
+    this->setSource(index); // 设置播放源
+    this->play(autoPlay); // 播放音乐
 }
 
 void PlayerController::onPlayPauseRequested()
@@ -96,8 +97,8 @@ void PlayerController::onSkipPlayRequested(const QModelIndex &index)
         return;
     }
 
-    emit isPlayingChanged(index, true);
-    this->setSource(index);
-    this->play(true);
+    emit isPlayingChanged(index, true); // 设置当前歌曲的正在播放标识
+    this->setSource(index); // 设置播放源
+    this->play(true); // 自动播放音乐
 }
 

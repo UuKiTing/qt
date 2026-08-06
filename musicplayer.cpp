@@ -62,10 +62,11 @@ void MusicPlayer::initLayout()
 void MusicPlayer::saveSettings()
 {
     QSettings s("Luo", "MusicPlayer");
-    s.setValue("currentRow", m_listManager->currentRow());
-    s.setValue("position", m_controller->position());
-    s.setValue("volume", m_controller->volume());
-    s.setValue("playMode", static_cast<int>(m_listManager->mode()));
+
+    s.setValue("currentRow", m_listManager->currentRow()); // 保存当前播放的音乐在列表中的行号
+    s.setValue("position", m_controller->position()); // 保存当前播放的音乐的播放进度
+    s.setValue("volume", m_controller->volume()); // 保存当前的音量大小
+    s.setValue("playMode", static_cast<int>(m_listManager->mode())); // 保存当前的播放模式
 }
 
 
@@ -73,19 +74,20 @@ void MusicPlayer::loadSettings()
 {
     QSettings s("Luo", "MusicPlayer");
 
-    int playProgress = s.value("position", 0).toInt();
-    int row = s.value("currentRow", 0).toInt();
-    int volume = s.value("volume", 20).toInt();
+    int playProgress = s.value("position", 0).toInt(); // 获取上次部分的播放进度，默认为0
+    int row = s.value("currentRow", 0).toInt(); // 获取上次播放的音乐在列表中的行号，默认为0
+    int volume = s.value("volume", 20).toInt(); // 获取上次的音量大小，默认为20
 
-    m_listManager->setCurrentRow(row);
+    m_listManager->setCurrentRow(row); // 设置当前播放的音乐在列表中的行号
 
-    QModelIndex index = m_listManager->index();
+    QModelIndex index = m_listManager->index(); // 获取当前播放的音乐在列表中的 QModelIndex
     if(!index.isValid()) return;
 
-    m_uiMain->setCurrentIndex(index);
+    m_uiMain->setCurrentIndex(index); // 设置音乐列表视图的当前选中项
 
-    m_uiMain->onListViewDbClicked(index, false);
+    m_uiMain->onListViewDbClicked(index, false); // 设置当前播放的音乐的标题、作者、封面等信息，并不自动播放
 
+    // 当音乐加载完成后，设置播放进度，并暂停播放
     connect(m_controller->mediaPlayer(), &QMediaPlayer::mediaStatusChanged, this, [this, playProgress](QMediaPlayer::MediaStatus status){
         if (status == QMediaPlayer::LoadedMedia) {
             m_controller->setPlayProgress(playProgress);
@@ -93,23 +95,24 @@ void MusicPlayer::loadSettings()
         }
     }, Qt::SingleShotConnection);
 
-    m_controller->setVolume(volume);
-    m_listManager->setMode(static_cast<PlayMode>(s.value("playMode", 0).toInt()));
+    m_controller->setVolume(volume); // 设置当前的音量大小
+
+    m_listManager->setMode(static_cast<PlayMode>(s.value("playMode", 0).toInt())); // 设置当前的播放模式
 }
 
 
 void MusicPlayer::closeEvent(QCloseEvent *event)
 {
-    saveSettings();
+    saveSettings(); // 关闭程序时保存当前配置
 
     QWidget::closeEvent(event);
 }
-
 
 void MusicPlayer::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
 
+    // 当窗口大小改变时，调整音乐详情页的大小和位置
     if(m_detailWidget){
         m_detailWidget->setGeometry(0, 0, this->width(), this->height());
     }
