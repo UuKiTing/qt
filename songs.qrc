@@ -1,8 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>songs/ANGEL.mp3</file>
-        <file>songs/Beauty And A Beat.mp3</file>
-        <file>songs/STAY.mp3</file>
-        <file>songs/1.mp3</file>
-    </qresource>
-</RCC>

@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>music.db</file>
-    </qresource>
-</RCC>

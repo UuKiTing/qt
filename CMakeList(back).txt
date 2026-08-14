@@ -1,0 +1,103 @@
+cmake_minimum_required(VERSION 3.16)
+
+project(MusicPlayer VERSION 0.1 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Qt 6 自动处理 MOC, UIC, RCC（替代手动设置）
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
+# 1. 查找 Qt6 依赖
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Multimedia Sql Widgets)
+
+# 开启 IDE 物理文件夹映射
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# 2. 搜集源码与资源
+file(GLOB_RECURSE SRC_FILES
+    "src/*.cpp"
+    "src/*.h"
+    "src/*.ui"
+)
+
+file(GLOB_RECURSE RES_FILES
+    "resources/*.qrc"
+    "*.qrc"
+)
+
+# 3. 依据磁盘路径自动生成 Qt Creator 项目树的文件夹节点
+foreach(FILE IN LISTS SRC_FILES RES_FILES)
+    get_filename_component(DIR "${FILE}" DIRECTORY)
+    file(RELATIVE_PATH REL_DIR "${CMAKE_CURRENT_SOURCE_DIR}" "${DIR}")
+    string(REPLACE "/" "\\" GROUP_NAME "${REL_DIR}")
+    if(GROUP_NAME)
+        source_group("${GROUP_NAME}" FILES "${FILE}")
+    else()
+        source_group("" FILES "${FILE}")
+    endif()
+endforeach()
+
+# 4. 构建目标（采用 Qt6 官方推荐的 MANUAL_FINALIZATION）
+qt_add_executable(${PROJECT_NAME}
+    MANUAL_FINALIZATION
+    main.cpp
+    ${SRC_FILES}
+    ${RES_FILES}
+)
+
+# 5. 配置 AUTOUIC 搜索路径（Qt6 规范：绑定到 Target 而非全局）
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    AUTOUIC_SEARCH_PATHS
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/ui;${CMAKE_CURRENT_SOURCE_DIR}/src/ui/views;${CMAKE_CURRENT_SOURCE_DIR}/src/ui/widgets;${CMAKE_CURRENT_SOURCE_DIR}/src/ui/forms"
+)
+
+# 6. 头文件与第三方库依赖
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/views
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/widgets
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/delegates
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/mediator
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/player
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/models
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/models/proxies
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/db
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/utils
+    ${CMAKE_CURRENT_SOURCE_DIR}/taglib/include
+)
+
+target_link_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/taglib/lib
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Multimedia
+    Qt6::Sql
+    Qt6::Widgets
+    tag
+)
+
+# 7. 平台属性设置（对齐官方模板）
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    MACOSX_BUNDLE TRUE
+    WIN32_EXECUTABLE TRUE
+)
+
+# 8. 安装规则
+include(GNUInstallDirs)
+install(TARGETS ${PROJECT_NAME}
+    BUNDLE DESTINATION .
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+# 9. Qt6 最终化（与 MANUAL_FINALIZATION 配合）
+qt_finalize_executable(${PROJECT_NAME})

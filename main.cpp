@@ -1,6 +1,9 @@
 #include "musicplayer.h"
-
+#include "logging.h"
 #include <QApplication>
+#include <QSystemTrayIcon>
+#include <QSettings>
+#include <QFile>
 
 int main(int argc, char *argv[])
 {
@@ -14,6 +17,10 @@ int main(int argc, char *argv[])
 
     qRegisterMetaType<PlayListInfo>("PlayListInfo");
 
+    setupLogFormat();
+    setupFileLogging();
+
+    qCInfo(appLog) << "应用启动";
 
     MusicPlayer player;
     player.show();
