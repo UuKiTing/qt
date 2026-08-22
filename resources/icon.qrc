@@ -22,5 +22,9 @@
         <file>icon/quit.png</file>
         <file>icon/playlistRightClick/del.png</file>
         <file>icon/playlistRightClick/play.png</file>
+        <file>icon/network.png</file>
+        <file>icon/networking.png</file>
+        <file>icon/play2.png</file>
+        <file>icon/setting.png</file>
     </qresource>
 </RCC>

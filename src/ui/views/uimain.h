@@ -11,6 +11,7 @@
 #include <QAbstractProxyModel>
 #include <QVector>
 #include <QSortFilterProxyModel>
+#include <QPushButton>
 
 namespace Ui {
 class UIMain;
@@ -34,8 +35,8 @@ public:
     void setVolumeValue(float volume); // 设置音量大小
     void setTitleAndArtist(const QString &title, const QString &artist); // 设置音乐标题和作者
     void setCurrentIndex(const QModelIndex &index); // 设置音乐列表视图的index
-    void setPlaylistName(const QString name); // 设置播放列表名称
-    void setPlaylistCover(const QString path); // 设置播放列表封面
+    void setPlaylistName(const QString &name); // 设置播放列表名称
+    void setPlaylistCover(const QString &path); // 设置播放列表封面
     void setPlayStyle(const QModelIndex &index); // 设置音乐播放样式
 
     void switchStackedWidget(int pageIndex); // 页面切换
@@ -51,6 +52,7 @@ public:
     QStackedWidget* stackedWidget(); // 获取堆叠窗口
     QFrame* controlBar(); // 获取控制栏
     QVector<int> getPlaylistRows(const QSortFilterProxyModel *model);
+    QPushButton* playlistBtn();
 
 
 signals:
@@ -92,6 +94,8 @@ private slots:
 
     void on_songListView_doubleClicked(const QModelIndex &index);
 
+    void on_playlistBtn_clicked();
+
 private:
     void connectSignal(); // 连接信号槽
     void initVolumeMenu(); // 初始化音量条
@@ -105,8 +109,8 @@ private:
     QMenu *m_volumeMenu{}; // 音量菜单
     QSlider *m_volumeSlider{}; // 音量滑块
     QMenu *m_contextMenu{}; // 右键菜单
-    QMenu *m_addToMenu;
-    QMenu *m_moveToMenu;
+    QMenu *m_addToMenu{};
+    QMenu *m_moveToMenu{};
 };
 
 #endif // UIMAIN_H

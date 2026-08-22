@@ -1,15 +1,29 @@
 #include "styleitem_delegate.h"
 #include "global.h"
+#include "cover_cache_manager.h"
+#include "image_loader.h"
 #include <QPainter>
 #include <QApplication>
 #include <QMouseEvent>
 #include <QSortFilterProxyModel>
 #include <QPainterPath>
 #include <QFile>
+#include <QtConcurrent>
+#include <QFuture>
 
 StyleItemDelegate::StyleItemDelegate(QObject *parent)
     : QStyledItemDelegate{parent}
-{}
+{
+    connect(&ImageLoader::getInstance(), &ImageLoader::imageLoaded,
+            this, [this](const QString &path, const QImage &image, const QPersistentModelIndex &pIndex){
+
+        QPixmap pix = QPixmap::fromImage(image);
+        CoverCacheManager::getInstance().insert(path, new QPixmap(pix));
+        if(pIndex.isValid()){
+            emit coverReady(pIndex);
+        }
+    });
+}
 
 QRect StyleItemDelegate::iconRectFor(const QRect &r, int iconSize)
 {
@@ -33,9 +47,9 @@ QRect StyleItemDelegate::durationRectFor(const QRect &r, int durWidth, int durMa
 QRect StyleItemDelegate::favBtnRectFor(const QRect &r, int btnSize, int btnMarginRight)
 {
     return QRect(r.right() - btnMarginRight - btnSize,
-                  r.center().y() - btnSize / 2,
-                  btnSize,
-                  btnSize);
+                 r.center().y() - btnSize / 2,
+                 btnSize,
+                 btnSize);
 }
 
 void StyleItemDelegate::textRectsFor(QRect &titleRect, QRect &artistRect, const QRect &r,int marginLeft, int width)
@@ -43,14 +57,14 @@ void StyleItemDelegate::textRectsFor(QRect &titleRect, QRect &artistRect, const 
     int margin = r.height() / 10;
     int height = (r.height() - 2 * margin) / 2;
     titleRect = QRect(marginLeft,
-                    r.top() + margin,
-                    width,
-                    height);
+                      r.top() + margin,
+                      width,
+                      height);
 
     artistRect = QRect(marginLeft,
-                    titleRect.bottom(),
-                    width,
-                    height);
+                       titleRect.bottom(),
+                       width,
+                       height);
 }
 
 
@@ -75,15 +89,43 @@ void StyleItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     }
     painter->restore();
 
-
     // 图标
-    QPixmap pix = getPixmap(index.data(Role::Cover).toString(),
-                           QSize(ICON_SIZE, ICON_SIZE),
-                           ICON_RADIUS);
+    QString path = index.data(Role::Cover).toString();
     QRect iconRect = iconRectFor(option.rect, ICON_SIZE);
-    QIcon icon = QIcon(pix);
-    icon.paint(painter, iconRect);
 
+    QPixmap *cached = CoverCacheManager::getInstance().get(path);
+    if (cached) {
+        painter->drawPixmap(iconRect, *cached);
+    }
+    else{
+        QPixmap defaultCover(":/icon/cover.png");
+        painter->drawPixmap(iconRect, defaultCover);
+
+        if(!path.isEmpty()){
+            QPersistentModelIndex pIndex(index);
+            ImageLoader::getInstance().addTask(path, pIndex, QSize(ICON_SIZE, ICON_SIZE), ICON_RADIUS);
+        }
+
+        // if (!path.isEmpty()) {
+        //     QSize iconSize(ICON_SIZE, ICON_SIZE);
+        //     QPersistentModelIndex pIndex(index);
+
+        //     QtConcurrent::run([this, path, iconSize, pIndex](){
+        //         QPixmap pix = roundPixmap(path, iconSize, ICON_RADIUS);
+
+        //         QMetaObject::invokeMethod(const_cast<StyleItemDelegate*>(this), [this, path, pix, pIndex]() {
+        //             if(!pix.isNull()){
+        //                 CoverCacheManager::getInstance().insert(path, new QPixmap(pix));
+        //             }
+
+        //             if(pIndex.isValid()){
+        //                 emit coverReady(pIndex);
+        //             }
+
+        //         }, Qt::QueuedConnection);
+        //     });
+        // }
+    }
 
     // 右侧保留区域：时长 + 按钮
     QRect durRect = durationRectFor(option.rect, DUR_WIDTH, DUR_MARGIN_RIGHT);
@@ -151,7 +193,6 @@ bool StyleItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 {
     if (event->type() == QEvent::MouseButtonRelease) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
-        // QRect btnRect(option.rect.right() - 120, option.rect.center().y() - 10, 20, 20);
         QRect btnRect = favBtnRectFor(option.rect, BUTTON_SIZE, BUTTON_MARGIN_RIGHT);
 
         if (btnRect.contains(mouseEvent->pos())) {
@@ -171,38 +212,4 @@ bool StyleItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
         }
     }
     return QStyledItemDelegate::editorEvent(event, model, option, index);
-}
-
-
-QPixmap StyleItemDelegate::getPixmap(const QString &path, const QSize &size, int radius) const
-{
-    if(m_coverCache.maxCost() == 0){
-        m_coverCache.setMaxCost(CACHE_LIMIT);
-    }
-
-    QPixmap *cached = m_coverCache.object(path);
-    if (cached)  return *cached;
-
-    QPixmap source;
-    if(QFile::exists(path)){
-        source = QPixmap(path);
-    }
-    if (source.isNull()) {
-        source = QPixmap(":/icon/cover.png");
-    }
-
-    source = source.scaled(size, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
-
-    QPixmap rounded(size);
-    rounded.fill(Qt::transparent);
-    QPainter painter(&rounded);
-    painter.setRenderHint(QPainter::Antialiasing);
-
-    QPainterPath p;
-    p.addRoundedRect(QRectF(0, 0, size.width(), size.height()), radius, radius);
-    painter.setClipPath(p);
-    painter.drawPixmap(0, 0, source);
-
-    m_coverCache.insert(path, new QPixmap(rounded), 1);
-    return rounded;
 }

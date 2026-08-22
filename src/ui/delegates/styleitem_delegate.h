@@ -5,6 +5,7 @@
 #include <QStyledItemDelegate>
 #include <QCache>
 #include <QPixmap>
+#include <QFutureWatcher>
 
 class StyleItemDelegate : public QStyledItemDelegate
 {
@@ -23,17 +24,12 @@ public:
 signals:
     void collected(const QModelIndex &index);
     void cancelCollected(const QModelIndex &index);
+    void coverReady(const QModelIndex &index) const;
 
 protected:
     virtual bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
 
 private:
-    QPixmap getPixmap(const QString &path, const QSize &size, int radius) const;
-
-    mutable QCache<QString, QPixmap> m_coverCache;
-
-    static constexpr int CACHE_LIMIT = 200;
-
     const int ICON_SIZE = 50;
     const int ICON_RADIUS = 5;
     const int DUR_MARGIN_RIGHT = 50;

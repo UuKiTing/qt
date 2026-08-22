@@ -102,7 +102,6 @@ void MusicPlayer::loadSettings()
     connect(m_controller->mediaPlayer(), &QMediaPlayer::mediaStatusChanged, this, [this, playProgress](QMediaPlayer::MediaStatus status){
         if (status == QMediaPlayer::LoadedMedia) {
             m_controller->setPlayProgress(playProgress);
-            // m_controller->mediaPlayer()->pause();
         }
     }, Qt::SingleShotConnection);
 

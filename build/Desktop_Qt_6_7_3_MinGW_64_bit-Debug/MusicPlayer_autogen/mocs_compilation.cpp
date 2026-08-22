@@ -13,3 +13,4 @@
 #include "J3CC273FWE/moc_uisidebar.cpp"
 #include "JCA2YNWUYB/moc_music_detail_widget.cpp"
 #include "JCA2YNWUYB/moc_search_preview_panel.cpp"
+#include "VSCBVMNR7M/moc_image_loader.cpp"

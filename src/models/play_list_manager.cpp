@@ -7,7 +7,9 @@
 #include <taglib/tag.h>
 #include <taglib/fileref.h>
 #include <QCoreApplication>
-
+#include <QFutureWatcher>
+#include <QtConcurrent>
+#include <QFuture>
 
 PlayListManager::PlayListManager(QObject *parent)
     : QObject{parent}
@@ -26,7 +28,6 @@ PlayListManager::PlayListManager(QObject *parent)
     // generateData();
     loadPlayList();
 }
-
 
 void PlayListManager::loadPlayList()
 {
@@ -51,6 +52,41 @@ void PlayListManager::loadPlayList()
 
         m_model->appendRow(item);
     }
+
+
+    // auto *watcher = new QFutureWatcher<QList<SongInfo>>(this);
+
+    // connect(watcher, &QFutureWatcher<QList<SongInfo>>::finished, this, [this, watcher](){
+    //     QList<SongInfo> list = watcher->result();
+
+    //     QDir dir = QDir(QCoreApplication::applicationDirPath());
+
+    //     for(SongInfo &info : list){
+    //         QStandardItem *item = new QStandardItem;
+
+    //         QString filePath = dir.filePath(info.filePath);
+    //         QString coverPath = dir.filePath(info.cover);
+
+    //         item->setData(info.id, Role::Id);
+    //         item->setData(info.title, Role::Title);
+    //         item->setData(info.artist, Role::Artist);
+    //         item->setData(info.duration, Role::Duration);
+    //         item->setData(filePath, Role::FilePath);
+    //         item->setData(coverPath, Role::Cover);
+    //         item->setData(info.lyrics, Role::Lyrics);
+    //         item->setData(toDurationString(info.duration), Role::DurationString);
+    //         item->setData(false, Role::IsPlaying);
+    //         item->setData(info.isFavo, Role::IsFavorite);
+
+    //         m_model->appendRow(item);
+    //     }
+    // });
+
+    // QFuture<QList<SongInfo>> future = QtConcurrent::run([](){
+    //     return DbManager::getInstance().loadSongs();
+    // });
+
+    // watcher->setFuture(future);
 }
 
 
@@ -112,26 +148,6 @@ void PlayListManager::setIsPlayingData(const QModelIndex &index, bool isPlaying)
 
 int PlayListManager::setNextRow(bool isNext)
 {
-    // int currentRow = this->currentRow();
-    // int total = this->modelRowCount();
-
-    // if(m_mode == PlayMode::Loop){
-    //     if(isNext) currentRow = (currentRow + 1) % total;
-    //     else currentRow = (currentRow - 1 + total) % total;
-    // }
-    // else if(m_mode == PlayMode::Random){
-    //     int row = QRandomGenerator::global()->bounded(total);
-    //     while(row == currentRow && total > 1) row = QRandomGenerator::global()->bounded(total);
-    //     currentRow = row;
-    // }
-    // else if(m_mode == PlayMode::Single){}
-
-    // this->setCurrentRow(currentRow);
-
-    // return currentRow;
-
-
-
     int currentRow = this->currentRow();
     int total = this->modelRowCount();
 

@@ -2,6 +2,7 @@
 #include "global.h"
 #include <QAbstractItemModel>
 
+
 SearchFilterProxyModel::SearchFilterProxyModel(QObject *parent)
     : QSortFilterProxyModel{parent}
 {
@@ -11,7 +12,7 @@ SearchFilterProxyModel::SearchFilterProxyModel(QObject *parent)
 void SearchFilterProxyModel::setKeyWord(const QString &keyword)
 {
     m_keyword = keyword;
-    invalidateFilter(); // 重新过滤
+    invalidateFilter();
 }
 
 bool SearchFilterProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const

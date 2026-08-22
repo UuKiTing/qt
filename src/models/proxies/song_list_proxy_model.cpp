@@ -18,7 +18,7 @@ bool SongListProxyModel::filterAcceptsRow(int source_row, const QModelIndex &sou
     }
 
     QModelIndex index = sourceModel()->index(source_row, 0, source_parent);
-    int songId = index.data(Qt::UserRole + 1).toInt();
+    int songId = index.data(Role::Id).toInt();
 
     return m_allowedSongIds.contains(songId);
 }

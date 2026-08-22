@@ -12,6 +12,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QVector>
+#include <QAbstractListModel>
 
 class PlayListManager : public QObject
 {

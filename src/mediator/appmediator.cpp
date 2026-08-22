@@ -1,4 +1,5 @@
 #include "appmediator.h"
+#include "logging.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QSettings>
@@ -167,6 +168,12 @@ void AppMediator::playlistConnect()
     connect(m_uiSideBar, &UISideBar::playlistClicked, m_uiMain, [this](const PlayListInfo &info){
         m_uiMain->setPlaylistName(info.name);
         m_uiMain->setPlaylistCover(info.cover);
+        if(m_listManager->songlistModel()->rowCount() == 0){
+            m_uiMain->playlistBtn()->setDisabled(true);
+        }
+        else{
+            m_uiMain->playlistBtn()->setDisabled(false);
+        }
     });
 
     // 侧边栏歌单点击，更新主界面歌单歌曲列表
@@ -180,11 +187,13 @@ void AppMediator::playlistConnect()
 
     // 侧边栏删除歌单，更新主界面右键菜单歌单列表
     connect(m_uiSideBar, &UISideBar::playlistDeleted, m_uiMain, &UIMain::removeContextMenuPlaylist);
+
+    // 侧边栏右键播放歌单
+    connect(m_uiSideBar, &UISideBar::playlistPlayed, m_uiMain->playlistBtn(), &QPushButton::click);
 }
 
 void AppMediator::collectSong(bool isCollect, const QModelIndex &index)
 {
-    qDebug() << index.row();
     QModelIndex idx;
     if(!index.isValid()) idx = m_listManager->index();
     else idx = index;
@@ -199,6 +208,7 @@ void AppMediator::collectSong(bool isCollect, const QModelIndex &index)
 
     if(!dbOk){
         QMessageBox::warning(m_uiMain, "操作失败", isCollect ? "收藏失败，请重试" : "取消收藏失败，请重试");
+        qCWarning(mediatorLog) << (isCollect ? "收藏失败" : "取消收藏失败");
         return;
     }
 

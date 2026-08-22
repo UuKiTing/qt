@@ -32,7 +32,7 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">background-color: white;</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="spacing">
@@ -88,7 +88,7 @@
          </property>
          <property name="styleSheet">
           <string notr="true">    QListView {
-		background-color: white;
+		background-color: transparent;
         border: none;
         outline: none;
     }
@@ -129,7 +129,7 @@
         <widget class="QListView" name="collectListView">
          <property name="styleSheet">
           <string notr="true"> QListView {
-		background-color: white;
+		background-color: transparent;
         border: none;
         outline: none;
     }
@@ -171,10 +171,7 @@
          <property name="styleSheet">
           <string notr="true"/>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_7">
-          <property name="spacing">
-           <number>0</number>
-          </property>
+         <layout class="QVBoxLayout" name="verticalLayout_8">
           <property name="leftMargin">
            <number>0</number>
           </property>
@@ -188,16 +185,16 @@
            <number>0</number>
           </property>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
             <property name="spacing">
-             <number>30</number>
+             <number>20</number>
             </property>
             <item>
              <widget class="QLabel" name="playlistCover">
               <property name="minimumSize">
                <size>
-                <width>50</width>
-                <height>50</height>
+                <width>100</width>
+                <height>100</height>
                </size>
               </property>
               <property name="maximumSize">
@@ -218,17 +215,78 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="playlistName">
-              <property name="font">
-               <font>
-                <pointsize>12</pointsize>
-                <italic>false</italic>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>新建歌单1</string>
-              </property>
+             <widget class="QWidget" name="widget_4" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_7">
+               <item>
+                <widget class="QLabel" name="playlistName">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>新建歌单1</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <item>
+                  <widget class="QPushButton" name="playlistBtn">
+                   <property name="minimumSize">
+                    <size>
+                     <width>70</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>70</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QPushButton{
+	background-color: rgb(225, 225, 225);
+    border-radius: 15px;
+	color: black;
+}</string>
+                   </property>
+                   <property name="text">
+                    <string>播放</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../../../resources/icon.qrc">
+                     <normaloff>:/icon/play2.png</normaloff>:/icon/play2.png</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_5">
+                   <property name="orientation">
+                    <enum>Qt::Orientation::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+              </layout>
              </widget>
             </item>
            </layout>
@@ -236,7 +294,7 @@
           <item>
            <widget class="QListView" name="songListView">
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(255, 255, 255);</string>
+             <string notr="true"/>
             </property>
             <property name="editTriggers">
              <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
@@ -248,6 +306,7 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="page_4"/>
     </widget>
    </item>
    <item>

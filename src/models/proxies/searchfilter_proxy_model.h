@@ -3,6 +3,7 @@
 
 #include <QSortFilterProxyModel>
 
+
 class SearchFilterProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
@@ -16,6 +17,7 @@ protected:
 
 private:
     QString m_keyword;
+
 };
 
 #endif // SEARCHFILTER_PROXY_MODEL_H

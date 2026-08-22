@@ -97,7 +97,11 @@ void PlayerController::skipMusic(const QModelIndex &index)
 {
 
     emit isPlayingChanged(index, true); // 设置当前歌曲的正在播放标识
-    this->setSource(index); // 设置播放源
-    this->play(true); // 自动播放音乐
+    if(this->setSource(index)){ // 设置播放源
+        this->play(true); // 自动播放音乐
+    }
+    else{
+        qDebug(playerLog) << "设置播放源失败";
+    }
 }
 

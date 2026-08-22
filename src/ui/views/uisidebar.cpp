@@ -2,6 +2,7 @@
 #include "ui_uisidebar.h"
 #include "ui_dialog.h"
 #include "dbmanager.h"
+#include "cover_cache_manager.h"
 
 UISideBar::UISideBar(QWidget *parent)
     : QWidget(parent)
@@ -10,10 +11,8 @@ UISideBar::UISideBar(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // 设置按钮组，确保主页和收藏按钮的互斥性
-    group = new QButtonGroup(this);
-    group->addButton(ui->homeBtn);
-    group->addButton(ui->collectBtn);
+    // 设置按钮组
+    m_group = new QButtonGroup(this);
 
     // 设置用户头像
     QIcon icon = roundPixmap(QPixmap(":/images/avatar.png"), QSize(50, 50), 25);
@@ -25,13 +24,15 @@ UISideBar::UISideBar(QWidget *parent)
 
     m_dialog->setupUi(m_songListDialog); // 将m_dialog的UI设置到m_songListDialog中
 
+    initMainBtn();
+
     initContextMenu();
 
     connectSignals();
 
     // 从数据库中查询用户的歌单，并创建对应的歌单按钮
     QList<PlayListInfo> list = DbManager::getInstance().queryPlayLists(1);
-    for(auto &info : list){
+    for(const auto &info : list){
         createPlayList(info);
     }
 }
@@ -46,23 +47,38 @@ UISideBar::~UISideBar()
 
 void UISideBar::connectSignals()
 {
-    // 当主页按钮被选中时，页面切换信号，并更改按钮图标
-    connect(ui->homeBtn, &QToolButton::toggled, this, &UISideBar::toggleToHomePage);
-
-    // 当收藏按钮被选中时，页面切换信号，并更改按钮图标
-    connect(ui->collectBtn, &QToolButton::toggled, this, &UISideBar::toggleToCollectPage);
-
     // 创建歌单对话框的接受和取消按钮的点击事件连接
     connect(m_dialog->acceptBtn, &QPushButton::clicked, m_songListDialog, &QDialog::accept);
     connect(m_dialog->cancelBtn, &QPushButton::clicked, m_songListDialog, &QDialog::reject);
 
-
     // 当取消按钮被点击时，清空歌单名称输入框的文本
     connect(m_dialog->cancelBtn, &QPushButton::clicked, this, &UISideBar::clearInputBox);
 
-
     // 添加歌曲到歌单中
     connect(m_contextMenu, &QMenu::triggered, this, &UISideBar::rightClickPlaylist);
+}
+
+void UISideBar::initMainBtn()
+{
+    QList<QPushButton*> buttons = ui->mainBtnWidget->findChildren<QPushButton*>();
+    for (auto btn : buttons) {
+        btn->setCheckable(true);
+        btn->setCursor(Qt::PointingHandCursor);
+
+        m_group->addButton(btn);
+
+        const QString &name = btn->objectName();
+        if(name == "homeBtn"){
+            btn->setChecked(true);
+            connect(btn, &QPushButton::toggled, this, &UISideBar::toggleToHomePage);
+        }
+        else if(name == "collectBtn"){
+            connect(btn, &QPushButton::toggled, this, &UISideBar::toggleToCollectPage);
+        }
+        else if(name == "networkBtn"){
+            connect(btn, &QPushButton::toggled, this, &UISideBar::toggleToNetworkPage);
+        }
+    }
 }
 
 void UISideBar::toggleToCollectPage(bool checked)
@@ -76,8 +92,20 @@ void UISideBar::toggleToCollectPage(bool checked)
     }
 }
 
+void UISideBar::toggleToNetworkPage(bool checked)
+{
+    if(checked) {
+        emit pageChanged(MainPage::NetWork);
+        ui->networkBtn->setIcon(QIcon(":/icon/networking.png"));
+    }
+    else{
+        ui->networkBtn->setIcon(QIcon(":/icon/network.png"));
+    }
+}
+
 void UISideBar::toggleToHomePage(bool checked)
 {
+
     if(checked) {
         emit pageChanged(MainPage::Main);
         ui->homeBtn->setIcon(QIcon(":/icon/homeSelect.png"));
@@ -88,7 +116,7 @@ void UISideBar::toggleToHomePage(bool checked)
 }
 
 
-void UISideBar::createPlayList(PlayListInfo &info)
+void UISideBar::createPlayList(const PlayListInfo &info)
 {
     // 获取歌单按钮的布局
     QVBoxLayout *layout = qobject_cast<QVBoxLayout*>(ui->songList->layout());
@@ -96,22 +124,23 @@ void UISideBar::createPlayList(PlayListInfo &info)
     // 创建一个新的歌单按钮，设置其图标、提示信息和属性，然后将按钮添加到按钮组和布局中，并连接按钮的点击事件以发射相应的信号
     QPushButton *btn = new QPushButton;
     QPixmap pix = roundPixmap(QPixmap(info.cover), QSize(30, 30), 5);
+
     btn->setIconSize(QSize(30, 30));
-    btn->setIcon(pix);
     btn->setToolTip(info.name);
+    btn->setIcon(pix);
     btn->setCursor(Qt::PointingHandCursor);
     btn->setProperty("playlist", QVariant::fromValue(info));
     btn->setCheckable(true);
 
-    group->addButton(btn);
+    m_group->addButton(btn);
 
     layout->insertWidget(layout->count() - 1, btn);
 
     // 点击歌单按钮
     connect(btn, &QPushButton::clicked, [this, btn](){
         PlayListInfo info = btn->property("playlist").value<PlayListInfo>();
-        emit playlistClicked(info); // 发射歌单点击信号，传递歌单信息
         emit playlistUpdated(DbManager::getInstance().queryPlaylistSongId(info.id)); // 发射歌单更新信号，传递歌单中的歌曲ID集合
+        emit playlistClicked(info); // 发射歌单点击信号，传递歌单信息
         emit pageChanged(MainPage::SongList); // 发射页面切换信号，切换到歌单页面
     });
 
@@ -134,11 +163,13 @@ void UISideBar::initContextMenu()
 
     playAction->setObjectName("play");
     delAction->setObjectName("del");
+    renameAction->setObjectName("rename");
 
     m_contextMenu->addAction(playAction);
     m_contextMenu->addAction(delAction);
     m_contextMenu->addAction(renameAction);
 }
+
 
 void UISideBar::clearInputBox()
 {
@@ -146,37 +177,70 @@ void UISideBar::clearInputBox()
     lineEdit->clear();
 }
 
+
 void UISideBar::rightClickPlaylist(QAction *action)
 {
     int playlist_id = m_contextMenu->property("playlist_id").toInt();
 
     QAbstractButton* btn = findPlaylist(playlist_id);
+
+    if(!btn) return;
+
     if(action->objectName() == "play"){
-
-        //TODO: 为自定义藏歌单设置单独的播放功能
-
+        emit playlistPlayed(); // 播放歌单
     }
     else if(action->objectName() == "del"){
-        // QAbstractButton* btn = findPlaylist(playlist_id);
-        if(btn){
-            group->removeButton(btn);
-            ui->songList->layout()->removeWidget(btn);
-            btn->deleteLater();
+        int order = findPlaylistOrder(btn); // 查看当前右键的歌单在所有歌单中的序号
+        if(order < 0) return;
+
+        QList<QPushButton*> list = ui->songList->findChildren<QPushButton*>();
+        if(list.isEmpty()) return;
+
+        int next = (order + 1) % list.size(); // 计算当前右键的歌单下一个歌单的序号
+
+        if(next == order){ // 如果只有一个歌单，没有下一个歌单了，就跳转到主页
+            emit pageChanged(MainPage::Main);
+            return;
         }
+
+        list[next]->click();
+        m_group->removeButton(btn);
+        ui->songList->layout()->removeWidget(btn);
+        btn->deleteLater();
+
         DbManager::getInstance().deletePlaylist(playlist_id);
 
         emit playlistDeleted(playlist_id);
     }
+    else if(action->objectName() == "rename"){
+
+
+    }
 }
+
 
 QAbstractButton* UISideBar::findPlaylist(int playlist_id)
 {
-    for(auto btn : group->buttons()){
+    QList<QPushButton*> buttons = ui->songList->findChildren<QPushButton*>();
+    for(auto btn : buttons){
         PlayListInfo info = btn->property("playlist").value<PlayListInfo>();
         if(info.id == playlist_id){
             return btn;
         }
     }
+
+    return nullptr;
+}
+
+int UISideBar::findPlaylistOrder(QAbstractButton *btn)
+{
+    QList<QPushButton*> buttons = ui->songList->findChildren<QPushButton*>();
+    for(int i = 0; i < buttons.size(); ++i){
+        if(buttons[i] == btn){
+            return i;
+        }
+    }
+    return -1;
 }
 
 void UISideBar::setPlaylistCover(const QString &path, int playlist_id)
@@ -192,7 +256,6 @@ void UISideBar::setPlaylistCover(const QString &path, int playlist_id)
 
 void UISideBar::on_addSongBtn_clicked()
 {
-
     // 显示创建歌单对话框
     int result = m_songListDialog->exec();
 

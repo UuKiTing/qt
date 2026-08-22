@@ -47,6 +47,11 @@ void UIMain::connectSignal()
 
     // 添加歌曲到播放列表
     connect(m_addToMenu, &QMenu::triggered, this, &UIMain::addMusicToPlaylist);
+
+    // 更新封面
+    connect(m_delegate, &StyleItemDelegate::coverReady, this, [this](const QModelIndex &index){
+        ui->listView->update(index);
+    });
 }
 
 
@@ -57,6 +62,7 @@ void UIMain::initVolumeMenu()
     m_volumeSlider = new QSlider(Qt::Vertical);
     m_volumeSlider->setRange(0, 100);
 
+    //TODO: StyleSheet可以抽象成.qss文件
     m_volumeMenu->setStyleSheet(R"(
         QSlider {
             background-color: transparent;
@@ -180,7 +186,6 @@ void UIMain::removeContextMenuPlaylist(int playlist_id)
     }
 }
 
-
 void UIMain::setModel(QAbstractItemView *view, QAbstractItemModel *model)
 {
     view->setModel(model);
@@ -252,14 +257,14 @@ void UIMain::setCurrentIndex(const QModelIndex &index)
     ui->listView->setCurrentIndex(index);
 }
 
-void UIMain::setPlaylistName(const QString name)
+void UIMain::setPlaylistName(const QString &name)
 {
     ui->playlistName->setText(name);
 }
 
-void UIMain::setPlaylistCover(const QString path)
+void UIMain::setPlaylistCover(const QString &path)
 {
-    ui->playlistCover->setPixmap(QPixmap(path));
+    ui->playlistCover->setPixmap(roundPixmap(QPixmap(path), ui->playlistCover->size(), 5));
 }
 
 
@@ -319,6 +324,11 @@ QVector<int> UIMain::getPlaylistRows(const QSortFilterProxyModel *model)
     return rows;
 }
 
+QPushButton *UIMain::playlistBtn()
+{
+    return ui->playlistBtn;
+}
+
 
 void UIMain::changePlayMode(PlayMode mode)
 {
@@ -347,10 +357,6 @@ void UIMain::doubleClickPlay(const QModelIndex &index, bool autoPlay)
 
     this->setPlayStyle(sourceIndex); // 设置播放样式
     emit musicPlayed(index, autoPlay); // 发射播放请求信号
-
-
-    // this->setPlayStyle(index); // 设置播放样式
-    // emit musicPlayed(index, autoPlay); // 发射播放请求信号
 }
 
 void UIMain::skipMusic(bool isNext)
@@ -446,5 +452,15 @@ void UIMain::on_coverBtn_toggled(bool checked)
 void UIMain::on_songListView_doubleClicked(const QModelIndex &index)
 {
     this->doubleClickPlay(index, true);
+}
+
+
+void UIMain::on_playlistBtn_clicked()
+{
+    QAbstractItemModel *model = ui->songListView->model();
+    if(model && model->rowCount() >  0){
+        QModelIndex index = model->index(0, 0);
+        this->doubleClickPlay(index, true);
+    }
 }
 

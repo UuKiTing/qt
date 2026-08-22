@@ -36,7 +36,7 @@ private:
     void volumeSliderConnect(); //  音量
     void pageConnect(); // 页面切换
     void collectConnect(); // 音乐收藏
-    void searchConnect();
+    void searchConnect(); // 搜索框
     void playlistConnect(); // 歌单
 
     void collectSong(bool isCollect, const QModelIndex &index = QModelIndex()); // 收藏音乐

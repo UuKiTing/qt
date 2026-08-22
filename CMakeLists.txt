@@ -11,7 +11,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 # 1. 查找 Qt6 依赖
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Multimedia Sql Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Multimedia Sql Widgets Concurrent)
+find_package(Qt6 REQUIRED COMPONENTS Core)
 
 # 开启 IDE 物理文件夹映射
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -41,6 +42,8 @@ qt_add_executable(${PROJECT_NAME}
     ${RES_FILES}
 )
 
+
+target_link_libraries(MusicPlayer PRIVATE Qt6::Core)
 # 5. 配置 AUTOUIC 搜索路径
 set_target_properties(${PROJECT_NAME} PROPERTIES
     AUTOUIC_SEARCH_PATHS
@@ -74,6 +77,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Multimedia
     Qt6::Sql
     Qt6::Widgets
+    Qt6::Concurrent
     tag
 )
 

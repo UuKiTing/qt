@@ -12,7 +12,6 @@ class PlayerController : public QObject
 public:
     explicit PlayerController(QObject *parent = nullptr);
 
-
     bool setSource(const QModelIndex &index); // 设置播放源
     void play(bool autoPlay); // 播放音乐
 

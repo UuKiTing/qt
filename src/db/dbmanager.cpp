@@ -353,8 +353,8 @@ void DbManager::createUsersTable()
     QSqlQuery query;
     QString sql = R"(
         CREATE TABLE IF NOT EXISTS users(
-            int integer primarykey increment,
-            username text not null
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL
             );
     )";
 

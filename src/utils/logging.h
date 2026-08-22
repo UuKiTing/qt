@@ -14,6 +14,7 @@ Q_DECLARE_LOGGING_CATEGORY(modelLog)  // 模型层
 
 void setupLogFormat();    // 设置输出格式（时间戳+分类+级别）
 void setupFileLogging();  // 安装文件日志处理器（写文件+自动轮转）
+void shutdownFileLogging();
 
 
 #endif // LOGGING_H

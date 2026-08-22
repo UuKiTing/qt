@@ -5,13 +5,21 @@
 #include <QPixmap>
 #include <QModelIndex>
 
+enum class SongSource{
+    Local = 0, // 内置/本地歌曲
+    Remote, // 网络在线歌曲
+};
 
 struct SongInfo{
     qlonglong id = -1;
+    QString serverId;
+    SongSource source = SongSource::Local;
+
     QString title; // 歌名
     QString artist; // 歌手
     int duration = 0; // 时长/秒
     QString filePath; // 文件路径
+    QString remotePath; // 网络音频流http地址
     QString cover; // 封面路径
     QString lyrics; // 歌词路径
     bool isFavo; // 是否收藏
@@ -50,7 +58,8 @@ public:
     enum StackedWidgetIndex {
         Main = 0,
         Collect,
-        SongList
+        SongList,
+        NetWork
     };
 };
 
@@ -66,6 +75,9 @@ public:
 QString toDurationString(int duration); // 返回歌曲时长的HH:mm格式
 
 QPixmap roundPixmap(const QPixmap &source, const QSize &size, int radius);
+
+QPixmap roundPixmap(const QString &path, const QSize &size, int radius);
+
 
 SongInfo toSongInfo(const QModelIndex &index);
 
